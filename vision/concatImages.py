@@ -1,5 +1,5 @@
 import cv2 as cv
-from config import windowWidth
+from csr_detector.vision.config import windowWidth
 
 
 def frameResize(image, width=200):

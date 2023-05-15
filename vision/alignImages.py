@@ -1,6 +1,6 @@
 import cv2 as cv
 import numpy as np
-from config import maxFeatures, goodMatchPercentage
+from csr_detector.vision.config import maxFeatures, goodMatchPercentage
 
 
 def alignImages(frame1, frame2):

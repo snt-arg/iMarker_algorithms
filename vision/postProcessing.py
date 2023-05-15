@@ -1,5 +1,5 @@
 import cv2 as cv
-from filterROI import applyCircularMask
+from csr_detector.vision.filterROI import applyCircularMask
 
 
 def postProcessing(frame, procParams):

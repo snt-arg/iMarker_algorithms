@@ -1,7 +1,7 @@
 import cv2 as cv
-from alignImages import alignImages
-from postProcessing import postProcessing
-from concatImages import imageConcatHorizontal
+from csr_detector.vision.alignImages import alignImages
+from csr_detector.vision.postProcessing import postProcessing
+from csr_detector.vision.concatImages import imageConcatHorizontal
 
 
 def processFrames(frameL, frameR, retL, retR, procParams):
