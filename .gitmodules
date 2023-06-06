@@ -1,0 +1,3 @@
+[submodule "src/csr_sensors"]
+	path = src/csr_sensors
+	url = https://github.com/snt-arg/csr_sensors.git
