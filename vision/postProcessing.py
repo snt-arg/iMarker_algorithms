@@ -1,8 +1,9 @@
 import cv2 as cv
-from csr_detector.vision.filterROI import applyCircularMask
+import numpy as np
+from vision.filterROI import applyCircularMask
 
 
-def postProcessing(frame, procParams):
+def postProcessing(frame: np.ndarray, params: dict):
     """
     Post-processing of the frame.
 
@@ -10,7 +11,7 @@ def postProcessing(frame, procParams):
     -----------
     frame: numpy.ndarray
         Frame obtained from the camera
-    procParams: dict
+    params: dict
         Dictionary with the parameters for the post-processing
 
     Returns:
@@ -19,25 +20,31 @@ def postProcessing(frame, procParams):
         Processed frame
     """
     try:
-        # Preparation
-        thresholdingMethod = cv.THRESH_BINARY if procParams['threshbin'] else cv.THRESH_OTSU if procParams[
+        # Preparing the thresholding method
+        threshMethod = cv.THRESH_BINARY if params['threshbin'] else cv.THRESH_OTSU if params[
             'threshots'] else cv.THRESH_BINARY + cv.THRESH_OTSU
+
         # Convert image to grayscale
         frameGray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+
         # Apply threshold
         frameGray = cv.GaussianBlur(
-            frameGray, (int(procParams['gaussianKernel']), int(procParams['gaussianKernel'])), 0)
-        _, mask = cv.threshold(frameGray, procParams['threshold'], 255,
-                               thresholdingMethod)
-        # Apply region of interest
-        if (procParams['enableCircularMask']):
-            mask = applyCircularMask(mask, procParams['circlularMaskCoverage'])
+            frameGray, (int(params['gaussianKernel']), int(params['gaussianKernel'])), 0)
+        _, mask = cv.threshold(frameGray, params['threshold'], 255,
+                               threshMethod)
+        # Apply ROI
+        if (params['enableCircularMask']):
+            mask = applyCircularMask(mask, params['circlularMaskCoverage'])
+
         # Apply morphological operations
         erodeKernel = cv.getStructuringElement(
-            cv.MORPH_RECT, (int(procParams['erosionKernel']), int(procParams['erosionKernel'])))
+            cv.MORPH_RECT, (int(params['erosionKernel']), int(params['erosionKernel'])))
         mask = cv.morphologyEx(mask, cv.MORPH_ERODE, erodeKernel)
+
         # Create updated frame
         processedMask = cv.cvtColor(mask, cv.COLOR_GRAY2BGR)
+
+        # Return the value
         return processedMask
     except Exception as exception:
         print(f'Error occurred in postProcessing!\n{exception}', 'error')

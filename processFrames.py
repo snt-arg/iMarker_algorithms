@@ -1,12 +1,14 @@
 import cv2 as cv
-from csr_detector.vision.alignImages import alignImages
-from csr_detector.vision.postProcessing import postProcessing
-from csr_detector.vision.concatImages import imageConcatHorizontal
+import numpy as np
+from vision.alignImages import alignImages
+from vision.postProcessing import postProcessing
+from vision.concatImages import imageConcatHorizontal
 
 
-def processFrames(frameL, frameR, retL, retR, procParams):
+def processFrames(frameL: np.ndarray, frameR: np.ndarray,
+                  retL: bool, retR: bool, procParams: dict):
     """
-    Process the frames and return the result
+    Process the frames obtained from cameras and return the detected markers.
 
     Parameters
     ----------

@@ -1,45 +1,36 @@
 import cv2 as cv
-from csr_detector.vision.config import windowWidth
+import numpy as np
 
 
-def frameResize(image, width=200):
+def frameResize(frame: np.ndarray, width: int = 200):
     """
-    Resizes an image to a given width, while maintaining the aspect ratio.
+    Resizes the frame to a given width while maintaining the aspect ratio
 
     Parameters
     ----------
-    image: numpy.ndarray
-        Image to resize.
+    frame: numpy.ndarray
+        Frame to resize
     width: int
-        Width to resize the image to.
+        Width to resize the frame to
 
     Returns
     -------
-    scaledImage: numpy.ndarray
-        Resized image.
+    scaledFrame: numpy.ndarray
+        Resized frame
     """
-    # Calculating frame dimensions
-    frameHeight, frameWidth = image.shape[:2]
-    aspectRatio = frameWidth / frameHeight
+    # Calculating frame dimensions and aspect ration
+    frameH, frameW = frame.shape[:2]
+    aspectRatio = frameW / frameH
+
     # Scale the frame's width, while keeping its aspect ratio
-    scaledImage = cv.resize(
-        image, (width, int(width / aspectRatio)), interpolation=cv.INTER_AREA)
-    return scaledImage
+    scaledFrame = cv.resize(
+        frame, (width, int(width / aspectRatio)), interpolation=cv.INTER_AREA)
+
+    # Return
+    return scaledFrame
 
 
-def concatTile(imageList2d):
-    """
-    Concatenates a list of images horizontally and vertically.
-
-    Parameters
-    ----------
-    imageList2d: list
-        List of images to concatenate.
-    """
-    return cv.vconcat([cv.hconcat(imageList1d) for imageList1d in imageList2d])
-
-
-def imageConcatHorizontal(imageList):
+def imageConcatHorizontal(imageList: list, windowWidth: int):
     """
     Concatenates a list of images horizontally.
 

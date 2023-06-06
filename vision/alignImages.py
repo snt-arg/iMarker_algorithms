@@ -1,11 +1,11 @@
 import cv2 as cv
 import numpy as np
-from csr_detector.vision.config import maxFeatures, goodMatchPercentage
 
 
-def alignImages(frame1, frame2):
+def alignImages(frame1: np.ndarray, frame2: np.ndarray,
+                maxFeatures: int = 500, goodMatchPercentage: float = 0.4):
     """
-    Aligns two images using ORB features and descriptors.
+    Aligns two frames using ORB features and descriptors.
 
     Parameters
     ----------
@@ -13,11 +13,13 @@ def alignImages(frame1, frame2):
         Frame obtained from the left camera
     frame2: numpy.ndarray
         Frame obtained from the right camera
+
+    Returns:
+    --------
+    frame1Reg: numpy.ndarray
+        Registered version of the first frame
     """
     try:
-        # Convert images to grayscale
-        # frame2Gray = cv.cvtColor(frame2, cv.COLOR_BGR2GRAY)
-        # frame1Gray = cv.cvtColor(frame1, cv.COLOR_BGR2GRAY)
         # Detect ORB features and compute descriptors
         orb = cv.ORB_create(maxFeatures)
         keypointsL, descriptorsL = orb.detectAndCompute(frame1, None)
@@ -53,9 +55,8 @@ def alignImages(frame1, frame2):
             return frame1
         height, width = frame2.shape[:2]
         # Create registered image for left camera frame
-        frame1Reg = cv.warpPerspective(
+        return cv.warpPerspective(
             frame1, homography, (width, height))
-        return frame1Reg
     except Exception as exception:
         print(f'Error occurred in alignImages!\n{exception}', 'error')
         return frame1
