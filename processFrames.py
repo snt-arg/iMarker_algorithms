@@ -6,7 +6,7 @@ from vision.concatImages import imageConcatHorizontal
 
 
 def processFrames(frameL: np.ndarray, frameR: np.ndarray,
-                  retL: bool, retR: bool, procParams: dict):
+                  retL: bool, retR: bool, params: dict):
     """
     Process the frames obtained from cameras and return the detected markers.
 
@@ -20,7 +20,7 @@ def processFrames(frameL: np.ndarray, frameR: np.ndarray,
         True if the left camera frame is valid
     retR : bool
         True if the right camera frame is valid
-    procParams : dict
+    params : dict
         Dictionary containing the parameters for the processing
 
     Returns
@@ -28,25 +28,26 @@ def processFrames(frameL: np.ndarray, frameR: np.ndarray,
     frame: numpy.ndarray
         The processed frame
     """
-    # Define a notFound image
-    notFoundImage = cv.imread('src/notFound.png', cv.IMREAD_COLOR)
+    # Define a null frame
+    height, width = frameL.shape[:2]
+    emptyImage = cv.empty((width, height), frameL.dtype)
     # Retrieve camera frames (and check if they are valid)
-    frameL = frameL if retL else notFoundImage
-    frameR = frameR if retR else notFoundImage
+    frameL = frameL if retL else emptyImage
+    frameR = frameR if retR else emptyImage
     processedFrameL, processedFrameR = frameL, frameR
     # Which channels do we need?
     blueL, greenL, redL = cv.split(frameL)
     blueR, greenR, redR = cv.split(frameR)
-    if (procParams['rChannel']):
+    if (params['rChannel']):
         processedFrameL = redL
         processedFrameR = redR
-    if (procParams['gChannel']):
+    if (params['gChannel']):
         processedFrameL = greenL
         processedFrameR = greenR
-    if (procParams['bChannel']):
+    if (params['bChannel']):
         processedFrameL = blueL
         processedFrameR = blueR
-    if (procParams['rChannel'] or procParams['gChannel'] or procParams['bChannel']):
+    if (params['rChannel'] or params['gChannel'] or params['bChannel']):
         processedFrameL = cv.cvtColor(processedFrameL, cv.COLOR_GRAY2BGR)
         processedFrameR = cv.cvtColor(processedFrameR, cv.COLOR_GRAY2BGR)
     try:
@@ -57,14 +58,14 @@ def processFrames(frameL: np.ndarray, frameR: np.ndarray,
         frameLR = cv.subtract(frameLReg, processedFrameR)
         frameRL = cv.subtract(frameRReg, processedFrameL)
         # Post-processing
-        frameLR = postProcessing(frameLR, procParams)
-        frameRL = postProcessing(frameRL, procParams)
+        frameLR = postProcessing(frameLR, params)
+        frameRL = postProcessing(frameRL, params)
         frameOR = frameLR + frameRL
         # Concatenate frames
         frame = imageConcatHorizontal(
-            [frameL, frameR, frameRL if (procParams['isMarkerLeftHanded']) else frameLR])
+            [frameL, frameR, frameRL if (params['isMarkerLeftHanded']) else frameLR])
         # Return the frame to be shown in a window
         return frame
     except Exception as exception:
         print(f'Running failed in processFrames!\n{exception}', 'error')
-        return imageConcatHorizontal([frameL, frameR, notFoundImage])
+        return imageConcatHorizontal([frameL, frameR, emptyImage])

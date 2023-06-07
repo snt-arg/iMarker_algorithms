@@ -5,14 +5,18 @@ import numpy as np
 def alignImages(frame1: np.ndarray, frame2: np.ndarray,
                 maxFeatures: int = 500, goodMatchPercentage: float = 0.4):
     """
-    Aligns two frames using ORB features and descriptors.
+    Aligns a frame to another using ORB features and descriptors.
 
     Parameters
     ----------
     frame1: numpy.ndarray
-        Frame obtained from the left camera
+        Frame obtained from the first camera
     frame2: numpy.ndarray
-        Frame obtained from the right camera
+        Frame obtained from the second camera
+    maxFeatures: int
+        Maximum number of features to use for aligning the frames
+    goodMatchPercentage: float
+        The percentage threshold to be used for matching
 
     Returns:
     --------
@@ -22,12 +26,12 @@ def alignImages(frame1: np.ndarray, frame2: np.ndarray,
     try:
         # Detect ORB features and compute descriptors
         orb = cv.ORB_create(maxFeatures)
-        keypointsL, descriptorsL = orb.detectAndCompute(frame1, None)
-        keypointsR, descriptorsR = orb.detectAndCompute(frame2, None)
+        keypoints1, descriptors1 = orb.detectAndCompute(frame1, None)
+        keypoints2, descriptors2 = orb.detectAndCompute(frame2, None)
         # Match features
         descriptorMatcher = cv.DescriptorMatcher_create(
             cv.DESCRIPTOR_MATCHER_BRUTEFORCE_HAMMING)
-        matches = descriptorMatcher.match(descriptorsL, descriptorsR, None)
+        matches = descriptorMatcher.match(descriptors1, descriptors2, None)
         matches = list(matches)
         # Sort matches by score
         matches.sort(key=lambda x: x.distance, reverse=False)
@@ -36,21 +40,20 @@ def alignImages(frame1: np.ndarray, frame2: np.ndarray,
         matches = matches[:bestMatchesLength]
         # When there are no matches, return the original frame
         if (matches == []):
-            return frame2
+            return frame1
         # Extract location of good matches
-        pointsL = np.zeros((len(matches), 2), dtype=np.float32)
-        pointsR = np.zeros((len(matches), 2), dtype=np.float32)
+        points1 = np.zeros((len(matches), 2), dtype=np.float32)
+        points2 = np.zeros((len(matches), 2), dtype=np.float32)
         # Iterate over matches
         for index, match in enumerate(matches):
-            pointsL[index, :] = keypointsL[match.queryIdx].pt
-            pointsR[index, :] = keypointsR[match.trainIdx].pt
+            points1[index, :] = keypoints1[match.queryIdx].pt
+            points2[index, :] = keypoints2[match.trainIdx].pt
         # Making sure that there are at least four corresponding point sets
-        if len(pointsL) < 4 or len(pointsR) < 4:
-            return frame2
+        if len(points1) < 4 or len(points2) < 4:
+            return frame1
         # Find and use homography
-        homography, mask = cv.findHomography(pointsL, pointsR, cv.RANSAC)
+        homography, mask = cv.findHomography(points1, points2, cv.RANSAC)
         # To avoid error when there are no matches
-        # assert homography != None, 'No homography found!'
         if (homography is None):
             return frame1
         height, width = frame2.shape[:2]
