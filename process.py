@@ -73,11 +73,11 @@ def processFrames(frameL: np.ndarray, frameR: np.ndarray,
 
         # Concatenate frames
         frame = imageConcatHorizontal(
-            [frameL, frameR, frameRL if (params['isMarkerLeftHanded']) else frameLR])
+            [frameL, frameR, frameRL if (params['isMarkerLeftHanded'], params['windowWidth']) else frameLR])
 
         # Return the frame to be shown in a window
         return frame
 
     except Exception as exception:
         print(f'Running failed in processFrames!\n{exception}', 'error')
-        return imageConcatHorizontal([frameL, frameR, emptyImage])
+        return imageConcatHorizontal([frameL, frameR, emptyImage], params['windowWidth'])
