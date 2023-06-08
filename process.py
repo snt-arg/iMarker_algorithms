@@ -1,8 +1,8 @@
 import cv2 as cv
 import numpy as np
-from vision.alignImages import alignImages
 from vision.postProcessing import postProcessing
 from vision.concatImages import imageConcatHorizontal
+from vision.alignImages import alignImages, alignImagesWithMatrix
 
 
 def processFrames(frameL: np.ndarray, frameR: np.ndarray,
@@ -34,29 +34,33 @@ def processFrames(frameL: np.ndarray, frameR: np.ndarray,
     # Retrieve camera frames (and check if they are valid)
     frameL = frameL if retL else emptyImage
     frameR = frameR if retR else emptyImage
-    processedFrameL, processedFrameR = frameL, frameR
+    procFrameL, procFrameR = frameL, frameR
     # Which channels do we need?
     blueL, greenL, redL = cv.split(frameL)
     blueR, greenR, redR = cv.split(frameR)
     if (params['rChannel']):
-        processedFrameL = redL
-        processedFrameR = redR
+        procFrameL = redL
+        procFrameR = redR
     if (params['gChannel']):
-        processedFrameL = greenL
-        processedFrameR = greenR
+        procFrameL = greenL
+        procFrameR = greenR
     if (params['bChannel']):
-        processedFrameL = blueL
-        processedFrameR = blueR
+        procFrameL = blueL
+        procFrameR = blueR
     if (params['rChannel'] or params['gChannel'] or params['bChannel']):
-        processedFrameL = cv.cvtColor(processedFrameL, cv.COLOR_GRAY2BGR)
-        processedFrameR = cv.cvtColor(processedFrameR, cv.COLOR_GRAY2BGR)
+        procFrameL = cv.cvtColor(procFrameL, cv.COLOR_GRAY2BGR)
+        procFrameR = cv.cvtColor(procFrameR, cv.COLOR_GRAY2BGR)
     try:
         # Align images (if both are retrieved, align them, otherwise, return the notFound image)
-        frameLReg = alignImages(processedFrameL, processedFrameR)
-        frameRReg = alignImages(processedFrameR, processedFrameL)
+        frameLReg = alignImagesWithMatrix(
+            procFrameL, params['homographyMat']) if params['preAligment'] else alignImages(
+            procFrameL, procFrameR)
+        frameRReg = alignImagesWithMatrix(
+            procFrameR, params['homographyMat']) if params['preAligment'] else alignImages(
+            procFrameR, procFrameL)
         # Frames Subtraction
-        frameLR = cv.subtract(frameLReg, processedFrameR)
-        frameRL = cv.subtract(frameRReg, processedFrameL)
+        frameLR = cv.subtract(frameLReg, procFrameR)
+        frameRL = cv.subtract(frameRReg, procFrameL)
         # Post-processing
         frameLR = postProcessing(frameLR, params)
         frameRL = postProcessing(frameRL, params)

@@ -63,3 +63,23 @@ def alignImages(frame1: np.ndarray, frame2: np.ndarray,
     except Exception as exception:
         print(f'Error occurred in alignImages!\n{exception}', 'error')
         return frame1
+
+
+def alignImagesWithMatrix(frame: np.ndarray, homographyMat: np.ndarray):
+    """
+    Aligns two images using a pre-defined homography matrix
+
+    Parameters
+    ----------
+    frame: numpy.ndarray
+        Frame obtained from the camera
+
+    Returns
+    ----------
+    frameReg: numpy.ndarray
+        Registered image
+    """
+    height, width = frame.shape[:2]
+    frameReg = cv.warpPerspective(
+        frame, homographyMat, (width, height))
+    return frameReg
