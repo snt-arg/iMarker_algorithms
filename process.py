@@ -73,7 +73,7 @@ def processFrames(frameL: np.ndarray, frameR: np.ndarray,
 
         # Concatenate frames
         frame = imageConcatHorizontal(
-            [frameL, frameR, frameRL if (params['isMarkerLeftHanded'], params['windowWidth']) else frameLR])
+            [frameL, frameR, frameRL if (params['isMarkerLeftHanded']) else frameLR], params['windowWidth'])
 
         # Return the frame to be shown in a window
         return frame
