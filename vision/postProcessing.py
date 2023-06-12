@@ -1,6 +1,6 @@
 import cv2 as cv
 import numpy as np
-from filterROI import applyCircularMask
+from vision.filterROI import applyCircularMask
 
 
 def postProcessing(frame: np.ndarray, params: dict):

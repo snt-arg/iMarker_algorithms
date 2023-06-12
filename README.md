@@ -31,6 +31,12 @@ pip install numpy opencv-python
 
 Please note that this repository is designed to work with [CSR Detector - Sensors](https://github.com/snt-arg/csr_sensors) library, which takes the camera outputs and use it to detect the CSR-based objects.
 
+### Installation
+
+Finally, install the package using `pip install -e .` to install the packages.
+
+## 📁 Files & Folders
+
 The functions defined in `sensorIDS.py` file contain:
 
 - `maxFeatures`: maximum number of features for matching two images.
