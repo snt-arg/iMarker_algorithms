@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 from vision.postProcessing import postProcessing
+from vision.channelSeparator import channelSeparator
 from vision.concatImages import imageConcatHorizontal
 from vision.alignImages import alignImages, alignImagesWithMatrix
 
@@ -40,21 +41,8 @@ def processFrames(frameL: np.ndarray, frameR: np.ndarray,
     procFrameL, procFrameR = frameL, frameR
 
     # Which channels do we need?
-    blueL, greenL, redL = cv.split(frameL)
-    blueR, greenR, redR = cv.split(frameR)
-
-    if (params['rChannel']):
-        procFrameL = redL
-        procFrameR = redR
-    if (params['gChannel']):
-        procFrameL = greenL
-        procFrameR = greenR
-    if (params['bChannel']):
-        procFrameL = blueL
-        procFrameR = blueR
-    if (params['rChannel'] or params['gChannel'] or params['bChannel']):
-        procFrameL = cv.cvtColor(procFrameL, cv.COLOR_GRAY2BGR)
-        procFrameR = cv.cvtColor(procFrameR, cv.COLOR_GRAY2BGR)
+    procFrameL = channelSeparator(frameL)
+    procFrameR = channelSeparator(frameR)
 
     try:
         # Align images (if both are retrieved, align them, otherwise, return the notFound image)
