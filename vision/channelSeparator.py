@@ -27,6 +27,6 @@ def channelSeparator(frame: np.ndarray, params: dict):
     if (params['bChannel']):
         procFrame = blue
     if (params['rChannel'] or params['gChannel'] or params['bChannel']):
-        procFrame = cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
+        procFrame = cv.cvtColor(procFrame, cv.COLOR_GRAY2BGR)
 
     return procFrame
