@@ -41,8 +41,8 @@ def processFrames(frameL: np.ndarray, frameR: np.ndarray,
     procFrameL, procFrameR = frameL, frameR
 
     # Which channels do we need?
-    procFrameL = channelSeparator(frameL)
-    procFrameR = channelSeparator(frameR)
+    procFrameL = channelSeparator(frameL, params)
+    procFrameR = channelSeparator(frameR, params)
 
     try:
         # Align images (if both are retrieved, align them, otherwise, return the notFound image)
