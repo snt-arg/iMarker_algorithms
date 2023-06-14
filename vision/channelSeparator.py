@@ -18,6 +18,7 @@ def channelSeparator(frame: np.ndarray, params: dict):
     procFrame: numpy.ndarray
         Grayscale image with chosen channel
     """
+    procFrame = frame
     blue, green, red = cv.split(frame)
 
     if (params['rChannel']):
