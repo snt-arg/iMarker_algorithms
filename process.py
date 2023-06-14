@@ -26,7 +26,9 @@ def processFrames(frameL: np.ndarray, frameR: np.ndarray,
     Returns
     -------
     frame: numpy.ndarray
-        The processed frame
+        The processed frame after concatanation
+    mask: numpy.ndarray
+        The processed frame mask
     """
     # Define a null frame
     height, width = frameL.shape[:2]
@@ -71,12 +73,16 @@ def processFrames(frameL: np.ndarray, frameR: np.ndarray,
         frameLR = postProcessing(frameLR, params)
         frameRL = postProcessing(frameRL, params)
 
+        # Obtaining the mask image
+        mask = frameRL if (
+            params['isMarkerLeftHanded']) else frameLR
+
         # Concatenate frames
         frame = imageConcatHorizontal(
-            [frameL, frameR, frameRL if (params['isMarkerLeftHanded']) else frameLR], params['windowWidth'])
+            [frameL, frameR, mask], params['windowWidth'])
 
         # Return the frame to be shown in a window
-        return frame
+        return frame, mask
 
     except Exception as exception:
         print(f'Running failed in processFrames!\n{exception}', 'error')
