@@ -1,6 +1,6 @@
 # CSR Detector - Algorithm
 
-This library contains the approach to detect CSR-based materials in a two-camera setup hardware. The general methodology contains obtaining frames from two cameras and do some alignment and post-processings to filter everything but the part which is different will be highlighted.
+This library contains the approach to detect CSR-based materials in a **two-camera setup hardware** using frame subtraction or a **single-camera setup** using a set of image processing algorithms. The general methodology contains obtaining frames from two cameras and do some alignment and post-processings to filter everything but the part which is different will be highlighted.
 
 ![Demo](demo.png "Demo")
 
@@ -33,7 +33,7 @@ Please note that this repository is designed to work with [CSR Detector - Sensor
 
 ### Installation
 
-Finally, install the package using `pip install -e .` to install the packages.
+Install this repository using `pip install -e .` in the root directory.
 
 ## 📁 Files & Folders
 
