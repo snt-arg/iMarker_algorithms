@@ -75,3 +75,57 @@ def processFrames(frameL: np.ndarray, frameR: np.ndarray,
     except Exception as exception:
         print(f'Running failed in processFrames!\n{exception}', 'error')
         return imageConcatHorizontal([frameL, frameR, emptyImage], params['windowWidth'])
+
+
+def processMonoFrame(frame: np.ndarray, ret: bool, params: dict):
+    """
+    Process the frames obtained from a mono camera and return the thresholding image.
+
+    Parameters
+    ----------
+    frame : numpy.ndarray
+        Camera frame
+    ret : bool
+        True if the camera frame is valid
+    params : dict
+        Dictionary containing the parameters for the processing
+
+    Returns
+    -------
+    frame: numpy.ndarray
+        The processed frame
+    mask: numpy.ndarray
+        The processed frame mask
+    """
+    # Define a null frame
+    height, width = frame.shape[:2]
+    emptyImage = np.empty((width, height), frame.dtype)
+
+    # Retrieve camera frames (and check if they are valid)
+    frame = frame if ret else emptyImage
+    procFrame = frame
+
+    # Which channels do we need?
+    procFrame = channelSeparator(frame, params)
+
+    try:
+        # Convert the image to grayscale
+        # frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+
+        # Thresholding
+        # _, mask = cv.threshold(frame, 5, 255,
+        #    cv.THRESH_BINARY)
+
+        # Post-processing
+        mask = postProcessing(procFrame, params)
+
+        # Concatenate frames
+        frame = imageConcatHorizontal(
+            [frame, mask], params['windowWidth'])
+
+        # Return the frame to be shown in a window
+        return frame, mask
+
+    except Exception as exception:
+        print(f'Running failed in processMonoFrame!\n{exception}', 'error')
+        return imageConcatHorizontal([frame, emptyImage], params['windowWidth'])
