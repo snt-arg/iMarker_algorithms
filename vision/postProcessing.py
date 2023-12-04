@@ -33,7 +33,7 @@ def postProcessing(frame: np.ndarray, params: dict):
         _, mask = cv.threshold(frameGray, params['threshold'], 255,
                                threshMethod)
         # Apply ROI
-        if (params['enableCircularMask']):
+        if 'enableCircularMask' in params and params['enableCircularMask']:
             mask = applyCircularMask(mask, params['circlularMaskCoverage'])
 
         # Apply morphological operations

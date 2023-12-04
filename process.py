@@ -163,9 +163,10 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
 
     try:
         # Thresholding
-        mask = cv.subtract(procCurrFrame, procPrevFrame)
+        subFrame = cv.subtract(procCurrFrame, procPrevFrame)
 
         # Post-processing
+        mask = postProcessing(subFrame, params)
 
         # Concatenate frames
         frame = imageConcatHorizontal(
