@@ -147,8 +147,8 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
         The processed frame mask
     """
     # Define a null frame
-    height, width = frame.shape[:2]
-    emptyImage = np.empty((width, height), frame.dtype)
+    height, width = currFrame.shape[:2]
+    emptyImage = np.empty((width, height), currFrame.dtype)
 
     # Retrieve camera frames (and check if they are valid)
     currFrame = currFrame if ret else emptyImage
