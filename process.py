@@ -169,7 +169,7 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
 
         # Concatenate frames
         frame = imageConcatHorizontal(
-            [frame, mask], params['windowWidth'])
+            [currFrame, mask], params['windowWidth'])
 
         # Return the frame to be shown in a window
         return frame, mask
@@ -177,4 +177,4 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
     except Exception as exception:
         print(
             f'Running failed in processSequentialFrames!\n{exception}', 'error')
-        return imageConcatHorizontal([frame, emptyImage], params['windowWidth'])
+        return imageConcatHorizontal([currFrame, emptyImage], params['windowWidth'])
