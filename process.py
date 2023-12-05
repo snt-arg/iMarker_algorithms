@@ -170,7 +170,7 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
 
         # Concatenate frames
         frame = imageConcatHorizontal(
-            [currFrame, mask], params['windowWidth'])
+            [prevFrame, currFrame, mask], params['windowWidth'])
 
         # Return the frame to be shown in a window
         return frame, mask
