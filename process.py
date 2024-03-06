@@ -66,15 +66,16 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
             params['isMarkerLeftHanded']) else frameLR
 
         # Concatenate frames
-        frame = imageConcatHorizontal(
-            [frameL, frameR, mask], params['windowWidth'])
+        # frame = imageConcatHorizontal(
+        #     [frameL, frameR, mask], params['windowWidth'])
 
         # Return the frame to be shown in a window
-        return frame, mask
+        return frameL, frameR, mask
 
     except Exception as exception:
         print(f'Running failed in processStereoFrames!\n{exception}', 'error')
-        return imageConcatHorizontal([frameL, frameR, emptyImage], params['windowWidth'])
+        return frameL, frameR, emptyImage
+        # return imageConcatHorizontal([frameL, frameR, emptyImage], params['windowWidth'])
 
 
 def processSingleFrame(frame: np.ndarray, ret: bool, params: dict):
@@ -113,15 +114,16 @@ def processSingleFrame(frame: np.ndarray, ret: bool, params: dict):
         mask = postProcessing(procFrame, params)
 
         # Concatenate frames
-        frame = imageConcatHorizontal(
-            [frame, mask], params['windowWidth'])
+        # frame = imageConcatHorizontal(
+        #     [frame, mask], params['windowWidth'])
 
         # Return the frame to be shown in a window
         return frame, mask
 
     except Exception as exception:
         print(f'Running failed in processSingleFrame!\n{exception}', 'error')
-        return imageConcatHorizontal([frame, emptyImage], params['windowWidth'])
+        return frame, emptyImage
+        # return imageConcatHorizontal([frame, emptyImage], params['windowWidth'])
 
 
 def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: bool, params: dict):
@@ -173,9 +175,10 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
             [prevFrame, currFrame, mask], params['windowWidth'])
 
         # Return the frame to be shown in a window
-        return frame, mask
+        return prevFrame, currFrame, mask
 
     except Exception as exception:
         print(
             f'Running failed in processSequentialFrames!\n{exception}', 'error')
-        return imageConcatHorizontal([currFrame, emptyImage], params['windowWidth'])
+        return currFrame, emptyImage
+        # return imageConcatHorizontal([currFrame, emptyImage], params['windowWidth'])
