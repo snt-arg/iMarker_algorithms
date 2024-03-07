@@ -32,6 +32,11 @@ def postProcessing(frame: np.ndarray, params: dict):
             frameGray, (int(params['gaussianKernel']), int(params['gaussianKernel'])), 0)
         _, mask = cv.threshold(frameGray, params['threshold'], 255,
                                threshMethod)
+
+        # Inverting the binary image
+        if (params['invertBinaryImage']):
+            mask = cv.bitwise_not(mask)
+
         # Apply ROI
         if 'enableCircularMask' in params and params['enableCircularMask']:
             mask = applyCircularMask(mask, params['circlularMaskCoverage'])

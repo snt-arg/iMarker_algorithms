@@ -54,6 +54,7 @@ The functions defined in `sensorIDS.py` file contain:
 - `threshots`: set thresholding method to Otsu.
 - `threshboth`: set thresholding method to Binary+Otsu.
 - `isMarkerLeftHanded`: set if the marker is left-handed.
+- `invertBinaryImage`: set if you want to invert the created binary image
 
 ## ⚙️ Sample Usage
 
@@ -71,7 +72,7 @@ def main():
         retL, frameL = capL.read()
         retR, frameR = capR.read()
 
-        # Define 
+        # Define
         params = { ... }
 
         # Process the frame...
