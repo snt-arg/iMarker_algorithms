@@ -47,9 +47,9 @@ def postProcessing(frame: np.ndarray, params: dict):
         mask = cv.morphologyEx(mask, cv.MORPH_ERODE, erodeKernel)
 
         # Create updated frame
-        processedMask = cv.cvtColor(mask, cv.COLOR_GRAY2BGR)
+        # processedMask = cv.cvtColor(mask, cv.COLOR_GRAY2BGR)
 
         # Return the value
-        return processedMask
+        return mask
     except Exception as exception:
         print(f'Error occurred in postProcessing!\n{exception}', 'error')
