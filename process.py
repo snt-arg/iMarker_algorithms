@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 from vision.postProcessing import postProcessing
-from vision.channelSeparator import channelSeparator
+from vision.channelSeparatorRGB import channelSeparatorRGB
 from vision.concatImages import imageConcatHorizontal
 from vision.alignImages import alignImages, alignImagesWithMatrix
 
@@ -41,8 +41,8 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
     procFrameL, procFrameR = frameL, frameR
 
     # Which channels do we need?
-    procFrameL = channelSeparator(frameL, params)
-    procFrameR = channelSeparator(frameR, params)
+    procFrameL = channelSeparatorRGB(frameL, params)
+    procFrameR = channelSeparatorRGB(frameR, params)
 
     try:
         # Align images (if both are retrieved, align them, otherwise, return the notFound image)
@@ -107,7 +107,7 @@ def processSingleFrame(frame: np.ndarray, ret: bool, params: dict):
     procFrame = frame
 
     # Which channels do we need?
-    procFrame = channelSeparator(frame, params)
+    procFrame = channelSeparatorRGB(frame, params)
 
     try:
         # Post-processing
@@ -160,8 +160,8 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
     procPrevFrame = prevFrame
 
     # Which channels do we need?
-    procCurrFrame = channelSeparator(currFrame, params)
-    procPrevFrame = channelSeparator(prevFrame, params)
+    procCurrFrame = channelSeparatorRGB(currFrame, params)
+    procPrevFrame = channelSeparatorRGB(prevFrame, params)
 
     try:
         # Thresholding

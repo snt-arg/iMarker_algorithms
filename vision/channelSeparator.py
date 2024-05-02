@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 
 
-def channelSeparator(frame: np.ndarray, params: dict):
+def channelSeparatorRGB(frame: np.ndarray, params: dict):
     """
     Separates the channels of an RGB image based on the configuration
 
