@@ -1,9 +1,9 @@
 import cv2 as cv
 import numpy as np
-from vision.postProcessing import postProcessing
-from vision.concatImages import imageConcatHorizontal
-from vision.alignImages import alignImages, alignImagesWithMatrix
-from vision.channelSeparator import channelSeparatorRGB, channelSeparatorHSV
+from .vision.postProcessing import postProcessing
+from .vision.concatImages import imageConcatHorizontal
+from .vision.alignImages import alignImages, alignImagesWithMatrix
+from .vision.channelSeparator import channelSeparatorRGB, channelSeparatorHSV
 
 
 def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
