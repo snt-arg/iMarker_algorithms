@@ -41,8 +41,10 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
     procFrameL, procFrameR = frameL, frameR
 
     # Which channels do we need?
-    procFrameL = channelSeparatorRGB(frameL, params)
-    procFrameR = channelSeparatorRGB(frameR, params)
+    procFrameL = channelSeparatorRGB(
+        frameL, params['algorithm']['preprocess']['channel'])
+    procFrameR = channelSeparatorRGB(
+        frameR, params['algorithm']['preprocess']['channel'])
 
     try:
         # Align images (if both are retrieved, align them, otherwise, return the notFound image)
@@ -65,20 +67,15 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
         mask = frameRL if (
             params['isMarkerLeftHanded']) else frameLR
 
-        # Concatenate frames
-        # frame = imageConcatHorizontal(
-        #     [frameL, frameR, mask], params['windowWidth'])
-
         # Return the frame to be shown in a window
         return frameL, frameR, mask
 
     except Exception as exception:
         print(f'Running failed in processStereoFrames!\n{exception}', 'error')
         return frameL, frameR, emptyImage
-        # return imageConcatHorizontal([frameL, frameR, emptyImage], params['windowWidth'])
 
 
-def processSingleFrame(frame: np.ndarray, ret: bool, params: dict):
+def processSingleFrame(frame: np.ndarray, ret: bool, config: dict):
     """
     Process the frames obtained from a single camera and return the thresholded image.
 
@@ -88,7 +85,7 @@ def processSingleFrame(frame: np.ndarray, ret: bool, params: dict):
         Camera frame
     ret : bool
         True if the camera frame is valid
-    params : dict
+    config : dict
         Dictionary containing the parameters for the processing
 
     Returns
@@ -98,6 +95,9 @@ def processSingleFrame(frame: np.ndarray, ret: bool, params: dict):
     mask: numpy.ndarray
         The processed frame mask
     """
+    # Parameters
+    cfgProc = config['algorithm']['process']
+
     # Define a null frame
     height, width = frame.shape[:2]
     emptyImage = np.empty((width, height), frame.dtype)
@@ -107,15 +107,11 @@ def processSingleFrame(frame: np.ndarray, ret: bool, params: dict):
     procFrame = frame
 
     # Which channels do we need?
-    procFrame = channelSeparatorHSV(frame, params)
+    procFrame = channelSeparatorHSV(frame, cfgProc['channel'])
 
     try:
         # Post-processing
-        mask = postProcessing(procFrame, params)
-
-        # Concatenate frames
-        # frame = imageConcatHorizontal(
-        #     [frame, mask], params['windowWidth'])
+        mask = postProcessing(procFrame, config)
 
         # Return the frame to be shown in a window
         return frame, mask
@@ -123,10 +119,9 @@ def processSingleFrame(frame: np.ndarray, ret: bool, params: dict):
     except Exception as exception:
         print(f'Running failed in processSingleFrame!\n{exception}', 'error')
         return frame, emptyImage
-        # return imageConcatHorizontal([frame, emptyImage], params['windowWidth'])
 
 
-def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: bool, params: dict):
+def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: bool, config: dict):
     """
     Process sequential frames obtained from a mono camera and return the subtracted image.
 
@@ -138,7 +133,7 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
         Camera's current frame
     ret : bool
         True if the camera frame is valid
-    params : dict
+    config : dict
         Dictionary containing the parameters for the processing
 
     Returns
@@ -148,6 +143,9 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
     mask: numpy.ndarray
         The processed frame mask
     """
+    # Parameters
+    cfgProc = config['algorithm']['process']
+
     # Define a null frame
     height, width = currFrame.shape[:2]
     emptyImage = np.empty((width, height), currFrame.dtype)
@@ -160,20 +158,14 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
     procPrevFrame = prevFrame
 
     # Which channels do we need?
-    procCurrFrame = channelSeparatorRGB(currFrame, params)
-    procPrevFrame = channelSeparatorRGB(prevFrame, params)
+    procCurrFrame = channelSeparatorRGB(currFrame, cfgProc['channel'])
+    procPrevFrame = channelSeparatorRGB(prevFrame, cfgProc['channel'])
 
     try:
         # Thresholding
         subFrame = cv.subtract(procCurrFrame, procPrevFrame)
-
         # Post-processing
-        mask = postProcessing(subFrame, params)
-
-        # Concatenate frames
-        # frame = imageConcatHorizontal(
-        #     [prevFrame, currFrame, mask], params['windowWidth'])
-
+        mask = postProcessing(subFrame, config)
         # Return the frame to be shown in a window
         return prevFrame, currFrame, mask
 
@@ -181,4 +173,3 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
         print(
             f'Running failed in processSequentialFrames!\n{exception}', 'error')
         return prevFrame, currFrame, emptyImage
-        # return imageConcatHorizontal([currFrame, emptyImage], params['windowWidth'])

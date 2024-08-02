@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 
 
-def channelSeparatorRGB(frame: np.ndarray, params: dict):
+def channelSeparatorRGB(frame: np.ndarray, channel: str):
     """
     Separates the channels of an RGB image based on the configuration
 
@@ -10,8 +10,8 @@ def channelSeparatorRGB(frame: np.ndarray, params: dict):
     ----------
     frame: numpy.ndarray
         Frame obtained from the camera
-    params: dict
-        Dictionary with the channel-related parameters
+    channel: str
+        Channel to be separated
 
     Returns
     ----------
@@ -20,20 +20,20 @@ def channelSeparatorRGB(frame: np.ndarray, params: dict):
     """
     procFrame = frame
     blue, green, red = cv.split(frame)
-
-    if (params['rChannel']):
+    # Which channel do we need?
+    if (channel == 'r'):
         procFrame = red
-    if (params['gChannel']):
+    if (channel == 'g'):
         procFrame = green
-    if (params['bChannel']):
+    if (channel == 'b'):
         procFrame = blue
-    if (params['rChannel'] or params['gChannel'] or params['bChannel']):
+    if (channel == 'r' or channel == 'g' or channel == 'b'):
         procFrame = cv.cvtColor(procFrame, cv.COLOR_GRAY2BGR)
-
+    # Return the processed frame
     return procFrame
 
 
-def channelSeparatorHSV(frame: np.ndarray, params: dict):
+def channelSeparatorHSV(frame: np.ndarray, channel: str):
     """
     Separates the channels of an HSV image based on the configuration
 
@@ -41,8 +41,8 @@ def channelSeparatorHSV(frame: np.ndarray, params: dict):
     ----------
     frame: numpy.ndarray
         Frame obtained from the camera
-    params: dict
-        Dictionary with the color-related parameters
+    channel: str
+        Channel to be separated
 
     Returns
     ----------
@@ -68,14 +68,14 @@ def channelSeparatorHSV(frame: np.ndarray, params: dict):
     maskRed2 = cv.inRange(frame, lowerHsvRed2, higherHsvRed2)
     maskBlue = cv.inRange(frame, lowerHsvBlue, higherHsvBlue)
     maskGreen = cv.inRange(frame, lowerHsvGreen, higherHsvGreen)
-
-    if (params['rChannel']):
+    # Which channel do we need?
+    if (channel == 'r'):
         procFrame = maskRed1 + maskRed2
-    if (params['gChannel']):
+    if (channel == 'g'):
         procFrame = maskGreen
-    if (params['bChannel']):
+    if (channel == 'b'):
         procFrame = maskBlue
-    if (params['rChannel'] or params['gChannel'] or params['bChannel']):
+    if (channel == 'r' or channel == 'g' or channel == 'b'):
         procFrame = cv.cvtColor(procFrame, cv.COLOR_GRAY2BGR)
-
+    # Return the processed frame
     return procFrame
