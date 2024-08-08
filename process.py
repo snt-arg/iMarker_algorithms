@@ -6,7 +6,7 @@ from .vision.channelSeparator import channelSeparatorRGB, channelSeparatorHSV
 
 
 def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
-                        retL: bool, retR: bool, params: dict):
+                        retL: bool, retR: bool, config: dict, isUsb: bool):
     """
     Process the frames obtained from two cameras and return the detected markers.
 
@@ -20,8 +20,10 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
         True if the left camera frame is valid
     retR : bool
         True if the right camera frame is valid
-    params : dict
+    config : dict
         Dictionary containing the parameters for the processing
+    isUsb : bool
+        True if the sensor is USB and False if it is iDS
 
     Returns
     -------
@@ -30,41 +32,55 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
     mask: numpy.ndarray
         The processed frame mask
     """
-    # Define a null frame
-    height, width = frameL.shape[:2]
-    emptyImage = np.empty((width, height), frameL.dtype)
+    # Get the config values
+    cfgMarker = config['marker']
+    cfgAlgorithm = config['algorithm']
+    cfgUsbCam = config['sensor']['usbCam']
+    cfgGeneral = config['sensor']['general']
 
-    # Retrieve camera frames (and check if they are valid)
-    frameL = frameL if retL else emptyImage
-    frameR = frameR if retR else emptyImage
-    procFrameL, procFrameR = frameL, frameR
+    # Define a not found image
+    notFoundImage = cv.imread('./src/notFound.png')
+
+    # Check if the frames are valid
+    if not retL:
+        height, width = frameR.shape[:2]
+        emptyImage = np.empty((width, height), frameR.dtype)
+        return notFoundImage, frameR, emptyImage
+    if not retR:
+        height, width = frameL.shape[:2]
+        emptyImage = np.empty((width, height), frameL.dtype)
+        return frameL, notFoundImage, emptyImage
 
     # Which channels do we need?
     procFrameL = channelSeparatorRGB(
-        frameL, params['algorithm']['preprocess']['channel'])
+        frameL, cfgAlgorithm['process']['channel'])
     procFrameR = channelSeparatorRGB(
-        frameR, params['algorithm']['preprocess']['channel'])
+        frameR, cfgAlgorithm['process']['channel'])
 
     try:
-        # Align images (if both are retrieved, align them, otherwise, return the notFound image)
-        frameLReg = alignImagesWithMatrix(
-            procFrameL, params['homographyMat']) if params['preAligment'] else alignImages(
-            procFrameL, procFrameR)
-        frameRReg = alignImagesWithMatrix(
-            procFrameR, params['homographyMat']) if params['preAligment'] else alignImages(
-            procFrameR, procFrameL)
+        # Alignment based on setup
+        if isUsb:
+            frameLReg = alignImages(procFrameL, procFrameR)
+            frameRReg = alignImages(procFrameR, procFrameL)
+        else:
+            frameLReg = alignImagesWithMatrix(
+                procFrameL, config['homographyMat']) if config['preAligment'] else alignImages(
+                procFrameL, procFrameR)
+            frameRReg = alignImagesWithMatrix(
+                procFrameR, config['homographyMat']) if config['preAligment'] else alignImages(
+                procFrameR, procFrameL)
 
         # Frames Subtraction
         frameLR = cv.subtract(frameLReg, procFrameR)
         frameRL = cv.subtract(frameRReg, procFrameL)
 
         # Post-processing
-        frameLR = postProcessing(frameLR, params)
-        frameRL = postProcessing(frameRL, params)
+        frameLR = postProcessing(frameLR, config)
+        frameRL = postProcessing(frameRL, config)
 
         # Obtaining the mask image
         mask = frameRL if (
-            params['isMarkerLeftHanded']) else frameLR
+            cfgMarker['structure']['leftHanded']) else frameLR
 
         # Return the frame to be shown in a window
         return frameL, frameR, mask
