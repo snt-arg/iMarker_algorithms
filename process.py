@@ -63,11 +63,13 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
             frameLReg = alignImages(procFrameL, procFrameR)
             frameRReg = alignImages(procFrameR, procFrameL)
         else:
+            # Use the preset alignment or not
+            usePreset = config['algorithm']['process']['alignment']['usePreset']
             frameLReg = alignImagesWithMatrix(
-                procFrameL, config['homographyMat']) if config['preAligment'] else alignImages(
+                procFrameL, config['presetMat']) if usePreset else alignImages(
                 procFrameL, procFrameR)
             frameRReg = alignImagesWithMatrix(
-                procFrameR, config['homographyMat']) if config['preAligment'] else alignImages(
+                procFrameR, config['presetMat']) if usePreset else alignImages(
                 procFrameR, procFrameL)
 
         # Frames Subtraction
