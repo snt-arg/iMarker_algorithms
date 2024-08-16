@@ -3,7 +3,7 @@ import numpy as np
 from .filterROI import applyCircularMask
 
 
-def postProcessing(frame: np.ndarray, config: dict):
+def postProcessing(frame: np.ndarray, config: dict, isHSV: bool = False):
     """
     Post-processing of the frame.
 
@@ -27,6 +27,10 @@ def postProcessing(frame: np.ndarray, config: dict):
         # Preparing the thresholding method
         threshMethod = cv.THRESH_BINARY if cfgThreshold['method'] == 'binary' else cv.THRESH_OTSU if cfgThreshold[
             'method'] == 'otsu' else cv.THRESH_BINARY + cv.THRESH_OTSU
+
+        # Check if frame is RGB or HSV
+        if (isHSV):
+            frame = cv.cvtColor(frame, cv.COLOR_HSV2BGR)
 
         # Convert image to grayscale
         frameGray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)

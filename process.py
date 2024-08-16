@@ -99,7 +99,7 @@ def processSingleFrame(frame: np.ndarray, ret: bool, config: dict):
     Parameters
     ----------
     frame : numpy.ndarray
-        Camera frame
+        Camera frame in HSV format
     ret : bool
         True if the camera frame is valid
     config : dict
@@ -128,7 +128,7 @@ def processSingleFrame(frame: np.ndarray, ret: bool, config: dict):
 
     try:
         # Post-processing
-        mask = postProcessing(procFrame, config)
+        mask = postProcessing(procFrame, config, True)
 
         # Return the frame to be shown in a window
         return frame, mask
