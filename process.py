@@ -99,7 +99,7 @@ def processSingleFrame(frame: np.ndarray, ret: bool, config: dict):
     Parameters
     ----------
     frame : numpy.ndarray
-        Camera frame in HSV format
+        Camera frame in RGB format
     ret : bool
         True if the camera frame is valid
     config : dict
@@ -112,6 +112,9 @@ def processSingleFrame(frame: np.ndarray, ret: bool, config: dict):
     mask: numpy.ndarray
         The processed frame mask
     """
+    # Convert the frame to HSV
+    frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+
     # Parameters
     cfgProc = config['algorithm']['process']
 
@@ -129,6 +132,9 @@ def processSingleFrame(frame: np.ndarray, ret: bool, config: dict):
     try:
         # Post-processing
         mask = postProcessing(procFrame, config, True)
+
+        # Convert back to RGB
+        frame = cv.cvtColor(frame, cv.COLOR_HSV2BGR)
 
         # Return the frame to be shown in a window
         return frame, mask
