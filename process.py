@@ -13,9 +13,9 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
     Parameters
     ----------
     frameL : numpy.ndarray
-        Left camera frame
+        Left camera frame in RGB format
     frameR : numpy.ndarray
-        Right camera frame
+        Right camera frame in RGB format
     retL : bool
         True if the left camera frame is valid
     retR : bool
@@ -34,9 +34,12 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
     """
     # Get the config values
     cfgMarker = config['marker']
-    cfgAlgorithm = config['algorithm']
-    cfgUsbCam = config['sensor']['usbCam']
-    cfgGeneral = config['sensor']['general']
+    cfgProc = config['algorithm']['process']
+    cfgAlign = cfgProc['alignment']
+
+    # Variables
+    matchRate = int(cfgAlign['matchRate'])
+    maxFeatures = int(cfgAlign['maxFeatures'])
 
     # Define a not found image
     notFoundImage = cv.imread('./src/notFound.png')
@@ -51,25 +54,29 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
         emptyImage = np.empty((width, height), frameL.dtype)
         return frameL, notFoundImage, emptyImage
 
+    # Convert the frames to HSV
+    frameLHSV = cv.cvtColor(frameL, cv.COLOR_RGB2HSV)
+    frameRHSV = cv.cvtColor(frameR, cv.COLOR_RGB2HSV)
+
     # Which channels do we need?
-    procFrameL = channelSeparatorRGB(
-        frameL, cfgAlgorithm['process']['channel'])
-    procFrameR = channelSeparatorRGB(
-        frameR, cfgAlgorithm['process']['channel'])
+    procFrameL = channelSeparatorHSV(frameLHSV, cfgProc['channel'])
+    procFrameR = channelSeparatorHSV(frameRHSV, cfgProc['channel'])
 
     try:
         # Alignment based on setup
         if isUsb:
-            frameLReg = alignImages(procFrameL, procFrameR)
-            frameRReg = alignImages(procFrameR, procFrameL)
+            frameLReg = alignImages(
+                procFrameL, procFrameR, maxFeatures, matchRate)
+            frameRReg = alignImages(
+                procFrameR, procFrameL, maxFeatures, matchRate)
         else:
             # Use the preset alignment or not
-            usePreset = config['algorithm']['process']['alignment']['usePreset']
+            usePreset = cfgAlign['usePreset']
             frameLReg = alignImagesWithMatrix(
-                procFrameL, config['presetMat']) if usePreset else alignImages(
+                procFrameL, config['presetMat'], maxFeatures, matchRate) if usePreset else alignImages(
                 procFrameL, procFrameR)
             frameRReg = alignImagesWithMatrix(
-                procFrameR, config['presetMat']) if usePreset else alignImages(
+                procFrameR, config['presetMat'], maxFeatures, matchRate) if usePreset else alignImages(
                 procFrameR, procFrameL)
 
         # Frames Subtraction
@@ -83,6 +90,10 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
         # Obtaining the mask image
         mask = frameRL if (
             cfgMarker['structure']['leftHanded']) else frameLR
+
+        # Convert back to RGB
+        frameLR = cv.cvtColor(frameLR, cv.COLOR_HSV2BGR)
+        frameRL = cv.cvtColor(frameRL, cv.COLOR_HSV2BGR)
 
         # Return the frame to be shown in a window
         return frameL, frameR, mask
@@ -177,12 +188,9 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
     currFrame = currFrame if ret else emptyImage
     prevFrame = prevFrame if ret else emptyImage
 
-    procCurrFrame = currFrame
-    procPrevFrame = prevFrame
-
     # Which channels do we need?
-    procCurrFrame = channelSeparatorRGB(currFrame, cfgProc['channel'])
-    procPrevFrame = channelSeparatorRGB(prevFrame, cfgProc['channel'])
+    procCurrFrame = channelSeparatorHSV(currFrame, cfgProc['channel'])
+    procPrevFrame = channelSeparatorHSV(prevFrame, cfgProc['channel'])
 
     try:
         # Thresholding

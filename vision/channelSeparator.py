@@ -18,8 +18,12 @@ def channelSeparatorRGB(frame: np.ndarray, channel: str):
     procFrame: numpy.ndarray
         Grayscale image with chosen channel
     """
-    procFrame = frame
+    # Variables
+    procFrame = np.copy(frame)
+
+    # Split the channels
     blue, green, red = cv.split(frame)
+
     # Which channel do we need?
     if (channel == 'r'):
         procFrame = red
@@ -29,6 +33,7 @@ def channelSeparatorRGB(frame: np.ndarray, channel: str):
         procFrame = blue
     if (channel == 'r' or channel == 'g' or channel == 'b'):
         procFrame = cv.cvtColor(procFrame, cv.COLOR_GRAY2BGR)
+
     # Return the processed frame
     return procFrame
 
@@ -49,7 +54,8 @@ def channelSeparatorHSV(frame: np.ndarray, channel: str):
     procFrame: numpy.ndarray
         Grayscale image with chosen color
     """
-    procFrame = frame
+    # Variables
+    procFrame = np.copy(frame)
 
     # Fixed HSV values
     lowerHsvRed1 = np.array([0, 175, 20])
@@ -68,6 +74,7 @@ def channelSeparatorHSV(frame: np.ndarray, channel: str):
     maskRed2 = cv.inRange(frame, lowerHsvRed2, higherHsvRed2)
     maskBlue = cv.inRange(frame, lowerHsvBlue, higherHsvBlue)
     maskGreen = cv.inRange(frame, lowerHsvGreen, higherHsvGreen)
+
     # Which channel do we need?
     if (channel == 'r'):
         procFrame = maskRed1 + maskRed2
@@ -77,5 +84,6 @@ def channelSeparatorHSV(frame: np.ndarray, channel: str):
         procFrame = maskBlue
     if (channel == 'r' or channel == 'g' or channel == 'b'):
         procFrame = cv.cvtColor(procFrame, cv.COLOR_GRAY2BGR)
+
     # Return the processed frame
     return procFrame
