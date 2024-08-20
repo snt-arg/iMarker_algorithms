@@ -42,6 +42,7 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
     maxFeatures = int(cfgAlign['maxFeatures'])
 
     # Define a not found image
+    emptyImage = np.zeros((300, 300), dtype=np.uint8)
     notFoundImage = cv.imread('./src/notFound.png')
 
     # Check if the frames are valid
@@ -90,10 +91,6 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
         # Obtaining the mask image
         mask = frameRL if (
             cfgMarker['structure']['leftHanded']) else frameLR
-
-        # Convert back to RGB
-        frameLR = cv.cvtColor(frameLR, cv.COLOR_HSV2BGR)
-        frameRL = cv.cvtColor(frameRL, cv.COLOR_HSV2BGR)
 
         # Return the frame to be shown in a window
         return frameL, frameR, mask
