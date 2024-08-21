@@ -89,8 +89,7 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
         frameRL = postProcessing(frameRL, config)
 
         # Obtaining the mask image
-        mask = frameRL if (
-            cfgMarker['structure']['leftHanded']) else frameLR
+        mask = frameRL if cfgProc['subtractRL'] else frameLR
 
         # Return the frame to be shown in a window
         return frameL, frameR, mask
