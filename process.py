@@ -72,11 +72,13 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
         else:
             # Use the preset alignment or not
             usePreset = cfgAlign['usePreset']
+            procFrameL = channelSeparatorRGB(frameL, cfgProc['channel'])
+            procFrameR = channelSeparatorRGB(frameR, cfgProc['channel'])
             frameLReg = alignImagesWithMatrix(
-                procFrameL, config['presetMat'], maxFeatures, matchRate) if usePreset else alignImages(
+                procFrameL, config['presetMat']) if usePreset else alignImages(
                 procFrameL, procFrameR)
             frameRReg = alignImagesWithMatrix(
-                procFrameR, config['presetMat'], maxFeatures, matchRate) if usePreset else alignImages(
+                procFrameR, config['presetMat']) if usePreset else alignImages(
                 procFrameR, procFrameL)
 
         # Frames Subtraction
