@@ -35,9 +35,10 @@ def applyCircularMask(image: np.ndarray, coverage: float = 1.0, isInverted: bool
 
     # Subtraction
     if isInverted:
-        mask = cv.bitwise_and(mask, image)
-    else:
         mask = cv.bitwise_and(mask, cv.bitwise_not(image))
+        mask = cv.bitwise_not(mask)
+    else:
+        mask = cv.bitwise_and(mask, image)
 
     # Return the result
     return mask

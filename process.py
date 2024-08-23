@@ -33,7 +33,6 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
         The processed frame mask
     """
     # Get the config values
-    cfgMarker = config['marker']
     cfgProc = config['algorithm']['process']
     cfgAlign = cfgProc['alignment']
 
