@@ -40,19 +40,18 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
     matchRate = int(cfgAlign['matchRate'])
     maxFeatures = int(cfgAlign['maxFeatures'])
 
-    # Define a not found image
+    # Define an empty image
     emptyImage = np.zeros((300, 300), dtype=np.uint8)
-    notFoundImage = cv.imread('./src/notFound.png')
 
     # Check if the frames are valid
     if not retL:
         height, width = frameR.shape[:2]
         emptyImage = np.empty((width, height), frameR.dtype)
-        return notFoundImage, frameR, emptyImage
+        return emptyImage, frameR, emptyImage
     if not retR:
         height, width = frameL.shape[:2]
         emptyImage = np.empty((width, height), frameL.dtype)
-        return frameL, notFoundImage, emptyImage
+        return frameL, emptyImage, emptyImage
 
     # Convert the frames to HSV
     frameLHSV = cv.cvtColor(frameL, cv.COLOR_RGB2HSV)
