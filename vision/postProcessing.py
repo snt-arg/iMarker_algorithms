@@ -21,7 +21,8 @@ def postProcessing(frame: np.ndarray, config: dict, isHSV: bool = False):
     """
     try:
         # Processing parameters
-        cfgUsbCam = config['sensor']['usbCam']
+        isUsbCam = config['mode']['runner'] == 'usb'
+        cfgUsbCam = config['sensor']['usbCam'] if isUsbCam else None
         cfgPostprocess = config['algorithm']['postprocess']
         cfgThreshold = cfgPostprocess['threshold']
         # Preparing the thresholding method
@@ -46,7 +47,6 @@ def postProcessing(frame: np.ndarray, config: dict, isHSV: bool = False):
             mask = cv.bitwise_not(mask)
 
         # Apply ROI
-        isUsbCam = config['mode']['runner'] == 'usb'
         if isUsbCam and cfgUsbCam['enableMask']:
             mask = applyCircularMask(
                 mask, cfgUsbCam['maskSize'], cfgPostprocess['invertBinary'])
