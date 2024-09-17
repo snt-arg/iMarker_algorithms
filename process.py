@@ -190,7 +190,8 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
 
     try:
         # Thresholding
-        subFrame = cv.subtract(procCurrFrame, procPrevFrame)
+        subFrame = cv.subtract(procCurrFrame, procPrevFrame) if cfgProc['subtractRL'] else cv.subtract(
+            procPrevFrame, procCurrFrame)
         # Post-processing
         mask = postProcessing(subFrame, config)
         # Return the frame to be shown in a window
