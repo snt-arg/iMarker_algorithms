@@ -119,32 +119,35 @@ def processSingleFrame(frame: np.ndarray, ret: bool, config: dict):
     mask: numpy.ndarray
         The processed frame mask
     """
-    # Convert the frame to HSV
-    frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-
     # Parameters
     cfgProc = config['algorithm']['process']
+    isUV = config['mode']['runner'] == 'offimguv'
+
+    # Convert the frame to HSV
+    frameHSV = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
     # Define a null frame
     height, width = frame.shape[:2]
     emptyImage = np.empty((width, height), frame.dtype)
 
     # Retrieve camera frames (and check if they are valid)
-    frame = frame if ret else emptyImage
-    procFrame = frame
+    frameHSV = frameHSV if ret else emptyImage
+    procFrame = frameHSV
 
     # Which channels do we need?
-    procFrame = channelSeparatorHSV(frame, cfgProc['channel'])
+    procFrame = channelSeparatorRGB(
+        frame, cfgProc['channel']) if isUV else channelSeparatorHSV(frameHSV, cfgProc['channel'])
 
     try:
         # Post-processing
-        mask = postProcessing(procFrame, config, True)
+        mask = postProcessing(procFrame, config, False) if isUV else postProcessing(
+            procFrame, config, True)
 
         # Convert back to RGB
-        frame = cv.cvtColor(frame, cv.COLOR_HSV2BGR)
+        frameRGB = cv.cvtColor(frameHSV, cv.COLOR_HSV2BGR)
 
         # Return the frame to be shown in a window
-        return frame, mask
+        return frameRGB, mask
 
     except Exception as exception:
         print(f'Running failed in processSingleFrame!\n{exception}', 'error')
