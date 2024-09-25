@@ -121,7 +121,7 @@ def processSingleFrame(frame: np.ndarray, ret: bool, config: dict):
     """
     # Parameters
     cfgProc = config['algorithm']['process']
-    isUV = config['mode']['runner'] == 'offimguv'
+    isUV = config['mode']['runner'] == 'offimguv' or config['mode']['runner'] == 'usbuv'
 
     # Convert the frame to HSV
     frameHSV = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
