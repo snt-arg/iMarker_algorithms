@@ -35,6 +35,7 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
     # Get the config values
     cfgProc = config['algorithm']['process']
     cfgAlign = cfgProc['alignment']
+    cfgColorRange = cfgProc['colorRange']
 
     # Variables
     matchRate = int(cfgAlign['matchRate'])
@@ -58,8 +59,10 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
     frameRHSV = cv.cvtColor(frameR, cv.COLOR_RGB2HSV)
 
     # Which channels do we need?
-    procFrameL = channelSeparatorHSV(frameLHSV, cfgProc['channel'])
-    procFrameR = channelSeparatorHSV(frameRHSV, cfgProc['channel'])
+    procFrameL = channelSeparatorHSV(
+        frameLHSV, cfgProc['channel'], cfgColorRange)
+    procFrameR = channelSeparatorHSV(
+        frameRHSV, cfgProc['channel'], cfgColorRange)
 
     try:
         # Alignment based on setup
@@ -121,6 +124,7 @@ def processSingleFrame(frame: np.ndarray, ret: bool, config: dict):
     """
     # Parameters
     cfgProc = config['algorithm']['process']
+    cfgColorRange = cfgProc['colorRange']
     isUV = config['mode']['runner'] == 'offimguv' or config['mode']['runner'] == 'usbuv'
 
     # Convert the frame to HSV
@@ -136,7 +140,7 @@ def processSingleFrame(frame: np.ndarray, ret: bool, config: dict):
 
     # Which channels do we need?
     procFrame = channelSeparatorRGB(
-        frame, cfgProc['channel']) if isUV else channelSeparatorHSV(frameHSV, cfgProc['channel'])
+        frame, cfgProc['channel']) if isUV else channelSeparatorHSV(frameHSV, cfgProc['channel'], cfgColorRange)
 
     try:
         # Post-processing
@@ -178,6 +182,7 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
     """
     # Parameters
     cfgProc = config['algorithm']['process']
+    cfgColorRange = cfgProc['colorRange']
 
     # Define a null frame
     height, width = currFrame.shape[:2]
@@ -188,8 +193,10 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
     prevFrame = prevFrame if ret else emptyImage
 
     # Which channels do we need?
-    procCurrFrame = channelSeparatorHSV(currFrame, cfgProc['channel'])
-    procPrevFrame = channelSeparatorHSV(prevFrame, cfgProc['channel'])
+    procCurrFrame = channelSeparatorHSV(
+        currFrame, cfgProc['channel'], cfgColorRange)
+    procPrevFrame = channelSeparatorHSV(
+        prevFrame, cfgProc['channel'], cfgColorRange)
 
     try:
         # Thresholding

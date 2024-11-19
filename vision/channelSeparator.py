@@ -38,7 +38,7 @@ def channelSeparatorRGB(frame: np.ndarray, channel: str):
     return procFrame
 
 
-def channelSeparatorHSV(frame: np.ndarray, channel: str):
+def channelSeparatorHSV(frame: np.ndarray, channel: str, range: dict):
     """
     Separates the channels of an HSV image based on the configuration
 
@@ -48,6 +48,8 @@ def channelSeparatorHSV(frame: np.ndarray, channel: str):
         Frame obtained from the camera
     channel: str
         Channel to be separated
+    range: dict
+        Dictionary containing the HSV range for the colors
 
     Returns
     ----------
@@ -63,8 +65,8 @@ def channelSeparatorHSV(frame: np.ndarray, channel: str):
     higherHsvRed1 = np.array([10, 255, 255])
     higherHsvRed2 = np.array([180, 255, 255])
 
-    lowerHsvGreen = np.array([35, 50, 50])
-    higherHsvGreen = np.array([90, 255, 255])
+    lowerHsvGreen = np.array(range['hsv_green']['lower'])
+    higherHsvGreen = np.array(range['hsv_green']['upper'])
 
     lowerHsvBlue = np.array([100, 50, 50])
     higherHsvBlue = np.array([130, 255, 255])
