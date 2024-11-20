@@ -58,6 +58,8 @@ def channelSeparatorHSV(frame: np.ndarray, channel: str, range: dict):
     """
     # Variables
     procFrame = np.copy(frame)
+    greenL = np.array(range['hsv_green']['lower'])
+    greenH = np.array(range['hsv_green']['upper'])
 
     # Fixed HSV values
     lowerHsvRed1 = np.array([0, 175, 20])
@@ -65,17 +67,14 @@ def channelSeparatorHSV(frame: np.ndarray, channel: str, range: dict):
     higherHsvRed1 = np.array([10, 255, 255])
     higherHsvRed2 = np.array([180, 255, 255])
 
-    lowerHsvGreen = np.array(range['hsv_green']['lower'])
-    higherHsvGreen = np.array(range['hsv_green']['upper'])
-
     lowerHsvBlue = np.array([100, 50, 50])
     higherHsvBlue = np.array([130, 255, 255])
 
     # Masks for different colors
+    maskGreen = cv.inRange(frame, greenL, greenH)
     maskRed1 = cv.inRange(frame, lowerHsvRed1, higherHsvRed1)
     maskRed2 = cv.inRange(frame, lowerHsvRed2, higherHsvRed2)
     maskBlue = cv.inRange(frame, lowerHsvBlue, higherHsvBlue)
-    maskGreen = cv.inRange(frame, lowerHsvGreen, higherHsvGreen)
 
     # Which channel do we need?
     if (channel == 'r'):
