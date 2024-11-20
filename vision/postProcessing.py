@@ -54,7 +54,8 @@ def postProcessing(frame: np.ndarray, config: dict, isHSV: bool = False):
         # Apply morphological operations
         erodeKernel = cv.getStructuringElement(
             cv.MORPH_RECT, (int(cfgPostprocess['erosionKernelSize']), int(cfgPostprocess['erosionKernelSize'])))
-        mask = cv.morphologyEx(mask, cv.MORPH_ERODE, erodeKernel)
+        mask = cv.morphologyEx(mask, cv.MORPH_OPEN, erodeKernel)
+        mask = cv.morphologyEx(mask, cv.MORPH_CLOSE, erodeKernel)
 
         # Return the value
         return mask
