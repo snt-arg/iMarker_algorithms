@@ -127,28 +127,41 @@ def processSingleFrame(frame: np.ndarray, ret: bool, config: dict):
     cfgColorRange = cfgProc['colorRange']
     isUV = config['mode']['runner'] == 'offimguv' or config['mode']['runner'] == 'usbuv'
 
-    # Convert the frame to HSV
-    frameHSV = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-
     # Define a null frame
     height, width = frame.shape[:2]
     emptyImage = np.empty((width, height), frame.dtype)
 
-    # Retrieve camera frames (and check if they are valid)
-    frameHSV = frameHSV if ret else emptyImage
-    procFrame = frameHSV
-
-    # Which channels do we need?
-    procFrame = channelSeparatorRGB(
-        frame, cfgProc['channel']) if isUV else channelSeparatorHSV(frameHSV, cfgProc['channel'], cfgColorRange)
-
     try:
-        # Post-processing
-        mask = postProcessing(procFrame, config, False) if isUV else postProcessing(
-            procFrame, config, True)
+        # Variables
+        mask = None
 
-        # Convert back to RGB
-        frameRGB = cv.cvtColor(frameHSV, cv.COLOR_HSV2BGR)
+        # Check if grayscale
+        if isUV:
+            # Convert the frame to grayscale
+            frameGray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+            # Apply the histogram equalization
+            # frameGray = cv.equalizeHist(frameGray)
+            # Retrieve camera frames (and check if they are valid)
+            frameGray = frameGray if ret else emptyImage
+            # Convert the frame to RGB
+            procFrame = cv.cvtColor(frameGray, cv.COLOR_GRAY2BGR)
+            # Post-processing
+            mask = postProcessing(procFrame, config, False)
+            # Convert back to RGB
+            frameRGB = procFrame
+        else:
+            # Convert the frame to HSV
+            frameHSV = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+            # Retrieve camera frames (and check if they are valid)
+            frameHSV = frameHSV if ret else emptyImage
+            procFrame = frameHSV
+            # Which channels do we need?
+            procFrame = channelSeparatorHSV(
+                frameHSV, cfgProc['channel'], cfgColorRange)
+            # Post-processing
+            mask = postProcessing(procFrame, config, True)
+            # Convert back to RGB
+            frameRGB = cv.cvtColor(frameHSV, cv.COLOR_HSV2BGR)
 
         # Return the frame to be shown in a window
         return frameRGB, mask
