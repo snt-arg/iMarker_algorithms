@@ -206,14 +206,14 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
     prevFrame = prevFrame if ret else emptyImage
 
     # Which channels do we need?
-    procCurrFrame = channelSeparatorHSV(
-        currFrame, cfgProc['channel'], cfgColorRange)
-    procPrevFrame = channelSeparatorHSV(
-        prevFrame, cfgProc['channel'], cfgColorRange)
+    procCurrFrame = channelSeparatorRGB(
+        currFrame, cfgProc['channel'])
+    procPrevFrame = channelSeparatorRGB(
+        prevFrame, cfgProc['channel'])
 
     try:
         # Thresholding
-        subFrame = cv.subtract(procCurrFrame, procPrevFrame) if cfgProc['subtractRL'] else cv.subtract(
+        subFrame = cv.absdiff(procCurrFrame, procPrevFrame) if cfgProc['subtractRL'] else cv.absdiff(
             procPrevFrame, procCurrFrame)
         # Post-processing
         mask = postProcessing(subFrame, config)
