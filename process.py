@@ -213,7 +213,7 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
 
     try:
         # Thresholding
-        subFrame = cv.absdiff(procCurrFrame, procPrevFrame) if cfgProc['subtractRL'] else cv.absdiff(
+        subFrame = cv.subtract(procCurrFrame, procPrevFrame) if cfgProc['subtractRL'] else cv.subtract(
             procPrevFrame, procCurrFrame)
         # Post-processing
         mask = postProcessing(subFrame, config)
