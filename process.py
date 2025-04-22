@@ -5,24 +5,24 @@ from .vision.frameAlignment import alignFrames, alignFramesWithMatrix
 from .vision.channelSeparator import channelSeparatorRGB, channelSeparatorHSV
 
 
-def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
-                        retL: bool, retR: bool, config: dict, isUsb: bool):
+def stereoFrameProcessing(frameL: np.ndarray, frameR: np.ndarray,
+                          retL: bool, retR: bool, config: dict, isUsb: bool):
     """
     Process the frames obtained from two cameras and return the detected markers.
 
     Parameters
     ----------
-    frameL : numpy.ndarray
+    frameL: numpy.ndarray
         Left camera frame in RGB format
-    frameR : numpy.ndarray
+    frameR: numpy.ndarray
         Right camera frame in RGB format
-    retL : bool
+    retL: bool
         True if the left camera frame is valid
-    retR : bool
+    retR: bool
         True if the right camera frame is valid
-    config : dict
+    config: dict
         Dictionary containing the parameters for the processing
-    isUsb : bool
+    isUsb: bool
         True if the sensor is USB and False if it is iDS
 
     Returns
@@ -98,21 +98,22 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
         return frameL, frameR, mask
 
     except Exception as exception:
-        print(f'Running failed in processStereoFrames!\n{exception}', 'error')
+        print(
+            f'Running failed in stereoFrameProcessing!\n{exception}', 'error')
         return frameL, frameR, emptyImage
 
 
-def processSingleFrame(frame: np.ndarray, ret: bool, config: dict):
+def singleFrameProcessing(frame: np.ndarray, ret: bool, config: dict):
     """
     Process the frames obtained from a single camera and return the thresholded image.
 
     Parameters
     ----------
-    frame : numpy.ndarray
+    frame: numpy.ndarray
         Camera frame in RGB format
-    ret : bool
+    ret: bool
         True if the camera frame is valid
-    config : dict
+    config: dict
         Dictionary containing the parameters for the processing
 
     Returns
@@ -167,23 +168,24 @@ def processSingleFrame(frame: np.ndarray, ret: bool, config: dict):
         return frameRGB, mask
 
     except Exception as exception:
-        print(f'Running failed in processSingleFrame!\n{exception}', 'error')
+        print(
+            f'Running failed in singleFrameProcessing!\n{exception}', 'error')
         return frame, emptyImage
 
 
-def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: bool, config: dict):
+def sequentialFrameProcessing(prevFrame: np.ndarray, currFrame: np.ndarray, ret: bool, config: dict):
     """
     Process sequential frames obtained from a mono camera and return the subtracted image.
 
     Parameters
     ----------
-    prevFrame : numpy.ndarray
+    prevFrame: numpy.ndarray
         Camera's previous frame
-    currFrame : numpy.ndarray
+    currFrame: numpy.ndarray
         Camera's current frame
-    ret : bool
+    ret: bool
         True if the camera frame is valid
-    config : dict
+    config: dict
         Dictionary containing the parameters for the processing
 
     Returns
@@ -222,5 +224,5 @@ def processSequentialFrames(prevFrame: np.ndarray, currFrame: np.ndarray, ret: b
 
     except Exception as exception:
         print(
-            f'Running failed in processSequentialFrames!\n{exception}', 'error')
+            f'Running failed in sequentialFrameProcessing!\n{exception}', 'error')
         return prevFrame, currFrame, emptyImage

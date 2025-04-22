@@ -1,6 +1,6 @@
 import cv2 as cv
 import numpy as np
-from .filterROI import applyCircularMask
+from .filterFrames import applyCircularMask
 
 
 def postProcessing(frame: np.ndarray, config: dict, isHSV: bool = False):

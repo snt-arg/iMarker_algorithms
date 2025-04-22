@@ -114,20 +114,23 @@ Considering the setup chosen in [the detector sensors](https://github.com/snt-ar
 
 3. **Return** `M`
 
-## 📑 Code Structure
+## 👾 Code Structure
 
 It should be noted that this repository contains the functions to use the introduced algorithms as below:
 
-- **A. Image Processing Algorithms:** in the `vision/` directory, you can find below functions:
-  - `alignFrames.py`: contains `alignFrames` to align two given images (online) and `alignFramesWithMatrix` to align two images using a pre-defined homography matrix (offline)
-  - `channelSeparator.py`: contains `channelSeparatorRGB` and `channelSeparatorHSV` functions to filter the input image based on a given channel in RGB and HSV, respectively.
-  - `concatImages.py`: contains `resizeFrame` to resize an image and `concatFramesHorizontal` to concat a set of images for visualization.
-  - `filterROI.py`: contains `applyCircularMask` to apply a filtration mask on a given image (for dual-vision ELP camera setup)
-  - `postProcessing.py`: contains `postProcessing` function to improve the final processed image
-- **B. Core Runner:** in `process.py`, you can find three main functions for each of the algorithms introduced in [the algorithm variations](https://github.com/snt-arg/csr_detector#algorithms) section:
-  - `processStereoFrames`: for dual-vision setups
-  - `processSingleFrame`: for the single-vision with fixed polarizer (camouflaged iMarker) setup
-  - `processSequentialFrames`: for the single-vision with changable polarizer (using the function generator) setup
+| **File**                       | **Functions**               | **Description**                                         |
+| ------------------------------ | --------------------------- | ------------------------------------------------------- |
+| `process.py`                   | `stereoFrameProcessing`     | Functions to process dual-vision setup frames           |
+|                                | `singleFrameProcessing`     | Functions to process static single-vision setup frames  |
+|                                | `sequentialFrameProcessing` | Functions to process dynamic single-vision setup frames |
+| `vision`/`channelSeparator.py` | `channelSeparatorRGB`       | Function to separate RGB channels of a given frame      |
+|                                | `channelSeparatorHSV`       | Function to separate HSV channels of a given frame      |
+| `vision`/`concatImages.py`     | `resizeFrame`               | Function to resize a given frame                        |
+|                                | `concatFramesHorizontal`    | Function to concatenate a set of frames horizontally    |
+| `vision`/`filterFrames.py`     | `applyCircularMask`         | Function to apply a circular mask (ELP Dual-vision)     |
+| `vision`/`frameAlignment.py`   | `alignFrames`               | Function to align two given frames                      |
+|                                | `alignFramesWithMatrix`     | Function to align two given frames based on a matrix    |
+| `vision`/`postProcessing.py`   | `postProcessing`            | Function to improve the final processed frame           |
 
 ## 🧪 Example Usage
 
@@ -137,8 +140,9 @@ The code below uses [iMarker Sensor Interfaces](https://github.com/snt-arg/iMark
 
 ```python
 import numpy as np
-from process import processStereoFrames
 from sensors import usb_interface as usb
+from process import stereoFrameProcessing
+
 
 # Fetch the camera feed
 capL = usb.createCameraObject(0)
@@ -152,7 +156,7 @@ while True:
 
   # Other codes ...
 
-  frameL, frameR, frameMask = processStereoFrames(
+  frameL, frameR, frameMask = stereoFrameProcessing(
                 frameLRaw, frameRRaw, retL, retR, config, True)
 
   # Other codes ...
@@ -166,7 +170,7 @@ cap.release()
 ```python
 import numpy as np
 from sensors import rs_interface
-from process import processSingleFrame
+from process import singleFrameProcessing
 
 # Fetch the camera
 rs = rs_interface.rsCamera((640, 480), 30)
@@ -191,7 +195,7 @@ while True:
 
   # Other codes ...
 
-  cFrame, frameMask = processSingleFrame(currFrame, True, config)
+  cFrame, frameMask = singleFrameProcessing(currFrame, True, config)
 
   # Other codes ...
 

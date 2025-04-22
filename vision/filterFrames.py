@@ -1,8 +1,7 @@
 """
-📝 Image Concatenation Modules
+📝 Frame Filtration
 
-This module contains the functions to concatenate images.
-The functions are used to concatenate images horizontally.
+This module contains the functions to filter Region of Interest (ROI) from the frame.
 """
 
 import cv2 as cv
