@@ -1,3 +1,10 @@
+"""
+📝 Image Concatenation Modules
+
+This module contains the functions to concatenate images.
+The functions are used to concatenate images horizontally.
+"""
+
 import cv2 as cv
 import numpy as np
 

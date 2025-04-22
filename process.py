@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 from .vision.postProcessing import postProcessing
-from .vision.alignImages import alignImages, alignImagesWithMatrix
+from .vision.frameAlignment import alignFrames, alignFramesWithMatrix
 from .vision.channelSeparator import channelSeparatorRGB, channelSeparatorHSV
 
 
@@ -67,20 +67,20 @@ def processStereoFrames(frameL: np.ndarray, frameR: np.ndarray,
     try:
         # Alignment based on setup
         if isUsb:
-            frameLReg = alignImages(
+            frameLReg = alignFrames(
                 procFrameL, procFrameR, maxFeatures, matchRate)
-            frameRReg = alignImages(
+            frameRReg = alignFrames(
                 procFrameR, procFrameL, maxFeatures, matchRate)
         else:
             # Use the preset alignment or not
             usePreset = cfgAlign['usePreset']
             procFrameL = channelSeparatorRGB(frameL, cfgProc['channel'])
             procFrameR = channelSeparatorRGB(frameR, cfgProc['channel'])
-            frameLReg = alignImagesWithMatrix(
-                procFrameL, config['presetMat']) if usePreset else alignImages(
+            frameLReg = alignFramesWithMatrix(
+                procFrameL, config['presetMat']) if usePreset else alignFrames(
                 procFrameL, procFrameR)
-            frameRReg = alignImagesWithMatrix(
-                procFrameR, config['presetMat']) if usePreset else alignImages(
+            frameRReg = alignFramesWithMatrix(
+                procFrameR, config['presetMat']) if usePreset else alignFrames(
                 procFrameR, procFrameL)
 
         # Frames Subtraction

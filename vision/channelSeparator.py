@@ -1,22 +1,31 @@
+"""
+📝 Channel Separator Modules
+
+This module contains the functions to separate the channels of an image.
+The functions are used to separate the channels of an RGB or HSV image.
+The separated channels are then used for further processing.
+"""
+
 import cv2 as cv
 import numpy as np
 
 
 def channelSeparatorRGB(frame: np.ndarray, channel: str):
     """
-    Separates the channels of an RGB image based on the configuration
+    Separates the channels of an RGB image based on the configuration.
+    The function uses the RGB color space to separate the channels.
 
     Parameters
     ----------
     frame: numpy.ndarray
-        Frame obtained from the camera
+        Frame obtained from the camera.
     channel: str
-        Channel to be separated
+        Channel to be separated.
 
     Returns
     ----------
     procFrame: numpy.ndarray
-        Grayscale image with chosen channel
+        Grayscale image with chosen channel.
     """
     # Variables
     procFrame = np.copy(frame)
@@ -42,16 +51,17 @@ def channelSeparatorRGB(frame: np.ndarray, channel: str):
 
 def channelSeparatorHSV(frame: np.ndarray, channel: str, range: dict):
     """
-    Separates the channels of an HSV image based on the configuration
+    Separates the channels of an HSV image based on the configurations.
+    The function uses the HSV color space to separate the channels.
 
     Parameters
     ----------
     frame: numpy.ndarray
-        Frame obtained from the camera
+        Frame obtained from the camera.
     channel: str
-        Channel to be separated
+        Channel to be separated.
     range: dict
-        Dictionary containing the HSV range for the colors
+        Dictionary containing the HSV range for the colors.
 
     Returns
     ----------

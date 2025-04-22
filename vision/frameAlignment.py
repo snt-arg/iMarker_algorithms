@@ -1,8 +1,14 @@
+"""
+📝 Frame Alignment Module
+
+This module contains functions to align images using ORB features and descriptors.
+"""
+
 import cv2 as cv
 import numpy as np
 
 
-def alignImages(frame1: np.ndarray, frame2: np.ndarray,
+def alignFrames(frame1: np.ndarray, frame2: np.ndarray,
                 maxFeatures: int = 500, goodMatchPercentage: float = 0.4):
     """
     Aligns a frame to another using ORB features and descriptors.
@@ -10,18 +16,21 @@ def alignImages(frame1: np.ndarray, frame2: np.ndarray,
     Parameters
     ----------
     frame1: numpy.ndarray
-        Frame obtained from the first camera
+        First frame to be aligned.
     frame2: numpy.ndarray
-        Frame obtained from the second camera
+        Second frame to align to.
     maxFeatures: int
-        Maximum number of features to use for aligning the frames
+        Maximum number of features to detect.
     goodMatchPercentage: float
-        The percentage threshold to be used for matching
+        Percentage of good matches to keep.
+        This value should be between 0 and 1.
+        A value of 0.4 means that 40% of the best matches will be kept.
 
     Returns:
     --------
-    frame1Reg: numpy.ndarray
-        Registered version of the first frame
+    frameReg: numpy.ndarray
+        Registered image.
+        If no matches are found or an error occurs, the original frame1 is returned.
     """
     try:
         # Detect ORB features and compute descriptors
@@ -77,31 +86,53 @@ def alignImages(frame1: np.ndarray, frame2: np.ndarray,
         # To avoid error when there are no matches
         if (homography is None):
             return frame1
-        height, width = frame2.shape[:2]
 
         # Create registered image for left camera frame
-        return cv.warpPerspective(
+        height, width = frame2.shape[:2]
+        frameReg = cv.warpPerspective(
             frame1, homography, (width, height))
+
+        # Return the registered image
+        return frameReg
     except Exception as exception:
-        print(f'Error occurred in alignImages!\n{exception}', 'error')
+        print(f'Error occurred in alignFrames!\n{exception}', 'error')
         return frame1
 
 
-def alignImagesWithMatrix(frame: np.ndarray, homographyMat: np.ndarray):
+def alignFramesWithMatrix(frame: np.ndarray, homographyMat: np.ndarray):
     """
-    Aligns two images using a pre-defined homography matrix
+    Aligns two images using a pre-defined homography matrix.
 
     Parameters
     ----------
     frame: numpy.ndarray
-        Frame obtained from the camera
+        Frame obtained from the input visual sensor.
+    homographyMat: numpy.ndarray
+        Homography matrix to be used for alignment.
+        This matrix should be obtained from the calibration process.
 
     Returns
     ----------
     frameReg: numpy.ndarray
         Registered image
     """
+    # Check if the homography matrix is valid
+    if homographyMat is None or not isinstance(homographyMat, np.ndarray):
+        print("[Warning] Invalid homography matrix. Returning the original frame ...")
+        return frame
+
+    # Check if the homography matrix has the correct shape
+    if homographyMat.shape != (3, 3):
+        print(
+            "[Warning] Invalid homography matrix shape. Returning the original frame ...")
+        return frame
+
+    # Get the dimensions of the input frame
     height, width = frame.shape[:2]
+
+    # Generate the registered image using the homography matrix and the input frame
     frameReg = cv.warpPerspective(
         frame, homographyMat, (width, height))
+
+    # Return the registered image
     return frameReg

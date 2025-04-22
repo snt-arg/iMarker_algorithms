@@ -1,26 +1,34 @@
+"""
+📝 Image Concatenation Modules
+
+This module contains the functions to concatenate images.
+The functions are used to concatenate images horizontally.
+"""
+
 import cv2 as cv
 import numpy as np
 
 
-def frameResize(frame: np.ndarray, width: int = 200):
+def resizeFrame(frame: np.ndarray, width: int = 200):
     """
-    Resizes the frame to a given width while maintaining the aspect ratio
+    Resizes a frame to a given width while maintaining the aspect ratio.
 
     Parameters
     ----------
     frame: numpy.ndarray
-        Frame to resize
+        Frame to be resized.
     width: int
-        Width to resize the frame to
+        Desired width of the resized frame.
+        Default is 200.
 
     Returns
     -------
     scaledFrame: numpy.ndarray
-        Resized frame
+        Resized frame with the given width.
     """
     # Calculating frame dimensions and aspect ration
-    frameH, frameW = frame.shape[:2]
-    aspectRatio = frameW / frameH
+    height, width = frame.shape[:2]
+    aspectRatio = width / height
 
     # Scale the frame's width, while keeping its aspect ratio
     scaledFrame = cv.resize(
@@ -30,24 +38,33 @@ def frameResize(frame: np.ndarray, width: int = 200):
     return scaledFrame
 
 
-def imageConcatHorizontal(imageList: list, windowWidth: int):
+def concatFramesHorizontal(imageList: list, windowWidth: int):
     """
-    Concatenates a list of images horizontally.
+    Concatenates a list of images horizontally into a single image.
+    The images are resized to fit within the specified window width.
 
     Parameters
     ----------
     imageList: list
-        List of images to concatenate.
+        List of images to be concatenated.
+    windowWidth: int
+        Desired width of the concatenated image.
+
+    Returns
+    -------
+    concatenatedImage: numpy.ndarray
+        Concatenated image with the given width.
     """
     try:
         numberOfImages = len(imageList)
 
         # Resizing the images
-        resizedImageList = [frameResize(
+        resizedImageList = [resizeFrame(
             img, int(windowWidth / numberOfImages)) for img in imageList]
 
         # Returning the final image
         return cv.hconcat(resizedImageList)
     except Exception as exception:
         print(
-            f'Error occurred in imageConcatHorizontal!\n{exception}', 'error')
+            f'Error occurred in concatFramesHorizontal!\n{exception}', 'error')
+        return np.empty((0, 0), dtype=np.uint8)

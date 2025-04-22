@@ -119,9 +119,9 @@ Considering the setup chosen in [the detector sensors](https://github.com/snt-ar
 It should be noted that this repository contains the functions to use the introduced algorithms as below:
 
 - **A. Image Processing Algorithms:** in the `vision/` directory, you can find below functions:
-  - `alignImages.py`: contains `alignImages` to align two given images (online) and `alignImagesWithMatrix` to align two images using a pre-defined homography matrix (offline)
+  - `alignFrames.py`: contains `alignFrames` to align two given images (online) and `alignFramesWithMatrix` to align two images using a pre-defined homography matrix (offline)
   - `channelSeparator.py`: contains `channelSeparatorRGB` and `channelSeparatorHSV` functions to filter the input image based on a given channel in RGB and HSV, respectively.
-  - `concatImages.py`: contains `frameResize` to resize an image and `imageConcatHorizontal` to concat a set of images for visualization.
+  - `concatImages.py`: contains `resizeFrame` to resize an image and `concatFramesHorizontal` to concat a set of images for visualization.
   - `filterROI.py`: contains `applyCircularMask` to apply a filtration mask on a given image (for dual-vision ELP camera setup)
   - `postProcessing.py`: contains `postProcessing` function to improve the final processed image
 - **B. Core Runner:** in `process.py`, you can find three main functions for each of the algorithms introduced in [the algorithm variations](https://github.com/snt-arg/csr_detector#algorithms) section:
