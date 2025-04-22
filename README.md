@@ -1,53 +1,118 @@
 # iMarker Detector Algorithms
 
-![Detector](demo.png "Detector")
+![iMarker Detector Algorithms](docs/banner.png "iMarker Detector Algorithms")
 
-This repository contains the algorithms to detect iMarkers after receiving the feed from [the detector sensors](https://github.com/snt-arg/csr_sensors). It is mainly used alongside [the detector sensors](https://github.com/snt-arg/csr_detector) and wrapped by [GUI-enabled standalone version](https://github.com/snt-arg/csr_detector_standalone) and [ROS-based version](https://github.com/snt-arg/csr_detector_ros) frameworks.
+Welcome to the **iMarker Detector Algorithms** repository 🖥️!
+This toolkit provides various `Python` implemented algorithms for detecting and revealing **CSR areas** for **iMarker** Detection.
+It can receive visual sensor feed from [iMarker Detector Sensor Interfaces](https://github.com/snt-arg/iMarker_sensors).
 
-## ⚙️ Installation
+## 🧠 About iMarkers
 
-Install the required libraries for running the functions of this repository using the command `pip install numpy opencv-python` (tested with `opencv-python>4.10` and `numpy==1.x`).
+**iMarkers** are invisible fiducial markers detectable only by certain sensors and algorithms. They enable robust detection for human-robot interaction, AR applications, and indoor localization.
+Read more about iMarkers (developed for the TRANSCEND project at the [University of Luxembourg](https://www.uni.lu/en/)) in [this link](https://snt-arg.github.io/iMarkers/).
+
+## 🧰 Implemented Algorithms
+
+Various hardware designs can be employed to detect **iMarkers** (and differentiate their CSR-coated regions). In general, these sensors are designed in two variants:
+
+- **A. Dual-vision Sensor Setup:** a homogeneous perception system containing two (synchronized) cameras of the same type (_e.g.,_ two iDS cameras) fixed perpendicular to each other while facing different surfaces of an optical component, _i.e.,_ a beamsplitter.
+  - _example_: dual-vision setups designed for [ELP](https://github.com/snt-arg/iMarker_sensors#usb-cam) and [iDS](https://github.com/snt-arg/iMarker_sensors#ids-cam) cameras.
+- **B. Single-vision Sensor Setup:** a single camera with a polarizer (fixed or switching) attached to its lens.
+  - _example_: single-vision setup using [RealSense](https://github.com/snt-arg/iMarker_sensors#rs-cam).
+
+The algorithms in this repository contain the required functions for detecting iMarkers using both **Dual-vision** and **Single-vision Sensor Setups**.
+
+## 🛠️ Getting Started
+
+Clone the repository:
+
+```bash
+git clone git@github.com:snt-arg/iMarker_algorithms.git
+cd iMarker_algorithms
+```
+
+(Optional) Create and activate a virtual environment:
+
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+```bash
+pip install -r requirements.txt
+# or setup.py by "pip install -e ."
+```
+
+This will install all the required dependencies, containing mainly `numpy>=1.24.4` and `opencv-python>=4.10.0.84`
 
 ## ⚒️ Algorithm Variations <a id="algorithms"></a>
 
-Considering the setup chosen in [the detector sensors](https://github.com/snt-arg/csr_sensors#setup), the algorithm to detect iMarkers and CSRs may vary:
+Considering the setup chosen in [the detector sensors](https://github.com/snt-arg/iMarker_sensors), the algorithm to detect iMarkers (and CSR regions) may vary:
 
-### A. Dual-vision Setup
+### 🔍 Algorithm 1: Dual-Vision iMarker Detection
 
-In this setup, where beamsplitter plays a key role, [ELP](https://github.com/snt-arg/csr_sensors#usb-cam) and [iDS](https://github.com/snt-arg/csr_sensors#ids-cam) cameras are used to fetch visual data. The algorithm to process the frames is as follows:
+**Inputs:** Frame-sets `F₁` and `F₂` from cameras `C₁` and `C₂`
 
-```markdown
-- Receiving fetched frames from a dual-vision sensor
-- Aligning the images using ORB features
-- Applying frame-level subtraction
-- Applying thresholding and post-processing
-- Send the final image for ArUco Marker detection
-```
+**Output:** List of detected fiducial markers `M`
 
-### B. Single-vision Setup with Fixed Polarizer (Camouflaged iMarker)
+1. **Initialize:**
 
-In this setup, [RealSense](https://github.com/snt-arg/csr_sensors#rs-cam) is used to fetch visual data. The algorithm to process the frames is as follows:
+   - `M ← []`
+   - `p₁ ← calibrate(C₁)`
+   - `p₂ ← calibrate(C₂)`
+   - `h ← align(F₁, F₂)` using `p₁` and `p₂`
 
-```markdown
-- Receiving fetched frames from a single-vision sensor
-- Set boundaries for HSV primary colors (red, green, and blue)
-- Conversion to HSV
-- Filtering the image based on the set color channel and boundaries
-- Applying thresholding and post-processing
-- Send the final image for ArUco Marker detection
-```
+2. **For each** frame `f₁` in `F₁`:
 
-### C. Single-vision Setup with Changable Polarizer (Function Generator)
+   - `f₂ ←` corresponding synchronized frame in `F₂`
+   - `f₂ ← align(f₂)` based on `f₁` using `h`
+   - `fₚ ← f₂ - f₁`  <!-- final subtracted image -->
+   - `fₚ ← threshold(fₚ)`
+   - `fₚ ← postprocess(fₚ)` _(erosion + Gaussian blur)_
+   - **If** marker `m` is found in `fₚ`:
+     - Append `m` to `M`
 
-In this setup, [RealSense](https://github.com/snt-arg/csr_sensors#rs-cam) is used to fetch visual data. The algorithm to process the frames is as follows:
+3. **Return** `M`
 
-```markdown
-- Receiving fetched frames from a single-vision sensor
-- Fetch each frame and subtract it from its previous frame
-- Filtering the image based on the set color channel and boundaries
-- Applying thresholding and post-processing
-- Send the final image for ArUco Marker detection
-```
+### 🔍 Algorithm 2: Static Single-Vision iMarker Detection (Masking)
+
+**Input:** Frame-set `F` from the camera (RGB)  
+**Output:** List of detected fiducial markers `M`
+
+1. **Initialize:**
+
+   - `M ← []`
+   - `r ← (low, high)` ← _demanded color range in HSV_
+
+2. **For each** frame `f` in `F`:
+
+   - `fₚ ← convert(f)` to color space HSV
+   - `fₚ ← filter(fₚ)` with the range `r`
+   - `fₚ ← postprocess(fₚ)` _(erosion + Gaussian blur)_
+   - **If** marker `m` is found in `fₚ`:
+     - Append `m` to `M`
+
+3. **Return** `M`
+
+### 🔍 Algorithm 3: Dynamic Single-Vision iMarker Detection
+
+**Input:** Frame-set `F` from the camera  
+**Output:** List of detected fiducial markers `M`
+
+1. **Initialize:**
+
+   - `M ← []`
+   - `f_prev ← null`
+
+2. **For each** frame `f_t` in `F`:
+
+   - `fₚ ← f_t - f_prev`  <!-- final subtracted image -->
+   - `fₚ ← postprocess(fₚ)` _(erosion + Gaussian blur)_
+   - `f_prev ← f_t`
+   - **If** marker `m` is found in `fₚ`:
+     - Append `m` to `M`
+
+3. **Return** `M`
 
 ## 📑 Code Structure
 
