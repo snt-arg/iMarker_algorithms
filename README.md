@@ -129,6 +129,92 @@ It should be noted that this repository contains the functions to use the introd
   - `processSingleFrame`: for the single-vision with fixed polarizer (camouflaged iMarker) setup
   - `processSequentialFrames`: for the single-vision with changable polarizer (using the function generator) setup
 
-## 🚀 Running the Code
+## 🧪 Example Usage
 
-As mentioned before, the current repository is a sub-module and wrapped by [GUI-enabled standalone version](https://github.com/snt-arg/csr_detector_standalone) and [ROS-based version](https://github.com/snt-arg/csr_detector_ros) frameworks. Accordingly, take a look at the mentioned repositories to see examples of using iMarker detection algorithms.
+### I. Run a Dual-Vision Setup (Two USB Cameras)
+
+The code below uses [iMarker Sensor Interfaces](https://github.com/snt-arg/iMarker_sensors) to feed the iMarker detection algorithms:
+
+```python
+import numpy as np
+from process import processStereoFrames
+from sensors import usb_interface as usb
+
+# Fetch the camera feed
+capL = usb.createCameraObject(0)
+capR = usb.createCameraObject(1)
+
+# Loop
+while True:
+  # Retrieve frames
+  retL, frameLRaw = usb.grabImage(capL)
+  retR, frameRRaw = usb.grabImage(capR)
+
+  # Other codes ...
+
+  frameL, frameR, frameMask = processStereoFrames(
+                frameLRaw, frameRRaw, retL, retR, config, True)
+
+  # Other codes ...
+
+# Finally
+cap.release()
+```
+
+### II. Run a Static Single-Vision Setup (RealSense)
+
+```python
+import numpy as np
+from sensors import rs_interface
+from process import processSingleFrame
+
+# Fetch the camera
+rs = rs_interface.rsCamera((640, 480), 30)
+
+# Create a pipeline
+rs.createPipeline()
+
+# Start the pipeline
+isPipelineStarted = rs.startPipeline()
+
+# Loop
+while True:
+  # Check if the frames are valid
+  if not isPipelineStarted:
+      break
+
+  # Retrieve frames
+  frames = rs.grabFrames()
+
+  # Get the color frame
+  frame, matrix, coeffs = rs.getColorFrame(frames)
+
+  # Other codes ...
+
+  cFrame, frameMask = processSingleFrame(currFrame, True, config)
+
+  # Other codes ...
+
+# Finally
+if isPipelineStarted:
+    rs.stopPipeline()
+```
+
+## 📎 Related Repositories
+
+It is intended to work in conjunction with the core detection and visualization pipelines:
+
+- 🔍 [iMarker Sensor Interfaces](https://github.com/snt-arg/iMarker_sensors)
+- 🖥️ [Standalone GUI-enabled Version of iMarker Detection](https://github.com/snt-arg/iMarker_detector_standalone)
+- 🤖 [ROS-enabled Version of iMarker Detection for Advanced Robotics](https://github.com/snt-arg/iMarker_detector_ros)
+
+## 📚 Citation
+
+```bibtex
+@article{tourani2025unveiling,
+  title={Unveiling the Potential of iMarkers: Invisible Fiducial Markers for Advanced Robotics},
+  author={Tourani, Ali and Avsar, Deniz Isinsu and Bavle, Hriday and Sanchez-Lopez, Jose Luis and Lagerwall, Jan and Voos, Holger},
+  journal={arXiv preprint arXiv:2501.15505},
+  year={2025}
+}
+```
