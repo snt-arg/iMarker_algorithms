@@ -32,6 +32,8 @@ def channelSeparatorRGB(frame: np.ndarray, channel: str):
     if (channel == 'b'):
         procFrame = blue
     if (channel == 'r' or channel == 'g' or channel == 'b'):
+        # Enhance the frames
+        procFrame = cv.equalizeHist(procFrame)
         procFrame = cv.cvtColor(procFrame, cv.COLOR_GRAY2BGR)
 
     # Return the processed frame

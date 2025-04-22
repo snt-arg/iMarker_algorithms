@@ -24,10 +24,7 @@ def postProcessing(frame: np.ndarray, config: dict, isHSV: bool = False):
         isUsbCam = config['mode']['runner'] == 'usb'
         cfgUsbCam = config['sensor']['usbCam'] if isUsbCam else None
         cfgPostprocess = config['algorithm']['postprocess']
-        cfgThreshold = cfgPostprocess['threshold']
-        # Preparing the thresholding method
-        threshMethod = cv.THRESH_BINARY if cfgThreshold['method'] == 'binary' else cv.THRESH_OTSU if cfgThreshold[
-            'method'] == 'otsu' else cv.THRESH_BINARY + cv.THRESH_OTSU
+        cfgThreshold = cfgPostprocess['threshold']['method']
 
         # Check if frame is RGB or HSV
         if (isHSV):
@@ -36,11 +33,32 @@ def postProcessing(frame: np.ndarray, config: dict, isHSV: bool = False):
         # Convert image to grayscale
         frameGray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
-        # Apply threshold
+        # Apply Gaussian blur
         frameGray = cv.GaussianBlur(
             frameGray, (int(cfgPostprocess['gaussianKernelSize']), int(cfgPostprocess['gaussianKernelSize'])), 0)
-        _, mask = cv.threshold(
-            frameGray, cfgPostprocess['threshold']['size'], 255, threshMethod)
+
+        # Apply thresholding
+        if (cfgThreshold == 'adaptive'):
+            # Check the block size to be odd and greater than 1
+            blockSize = int(cfgPostprocess['threshold']['size'])
+            if (blockSize < 2):
+                blockSize = 3
+            if (blockSize % 2 == 0):
+                blockSize += 1
+            # Apply adaptive thresholding
+            mask = cv.adaptiveThreshold(
+                frameGray,
+                maxValue=255,
+                blockSize=blockSize,
+                thresholdType=cv.THRESH_BINARY,
+                adaptiveMethod=cv.ADAPTIVE_THRESH_GAUSSIAN_C,
+                C=2
+            )
+        else:
+            # Check the method
+            threshMethod = cv.THRESH_BINARY if cfgThreshold == 'binary' else cv.THRESH_OTSU
+            _, mask = cv.threshold(
+                frameGray, cfgPostprocess['threshold']['size'], 255, threshMethod)
 
         # Inverting the binary image
         if (cfgPostprocess['invertBinary']):
