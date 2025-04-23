@@ -1,8 +1,11 @@
 """
-📝 Image Concatenation Modules
+📝 'iMarker Detector Algorithms' Software
+    SPDX-FileCopyrightText: (2025) University of Luxembourg
+    © 2025 University of Luxembourg
+    Developed by: Ali TOURANI et al. at SnT / ARG.
 
-This module contains the functions to concatenate images.
-The functions are used to concatenate images horizontally.
+'iMarker Detector Algorithms' is licensed under the "SNT NON-COMMERCIAL" License.
+You may not use this file except in compliance with the License.
 """
 
 import cv2 as cv

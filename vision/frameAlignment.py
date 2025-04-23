@@ -1,7 +1,11 @@
 """
-📝 Frame Alignment Module
+📝 'iMarker Detector Algorithms' Software
+    SPDX-FileCopyrightText: (2025) University of Luxembourg
+    © 2025 University of Luxembourg
+    Developed by: Ali TOURANI et al. at SnT / ARG.
 
-This module contains functions to align images using ORB features and descriptors.
+'iMarker Detector Algorithms' is licensed under the "SNT NON-COMMERCIAL" License.
+You may not use this file except in compliance with the License.
 """
 
 import cv2 as cv

@@ -1,9 +1,11 @@
 """
-📝 Channel Separator Modules
+📝 'iMarker Detector Algorithms' Software
+    SPDX-FileCopyrightText: (2025) University of Luxembourg
+    © 2025 University of Luxembourg
+    Developed by: Ali TOURANI et al. at SnT / ARG.
 
-This module contains the functions to separate the channels of an image.
-The functions are used to separate the channels of an RGB or HSV image.
-The separated channels are then used for further processing.
+'iMarker Detector Algorithms' is licensed under the "SNT NON-COMMERCIAL" License.
+You may not use this file except in compliance with the License.
 """
 
 import cv2 as cv
