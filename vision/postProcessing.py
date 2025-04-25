@@ -45,7 +45,7 @@ def postProcessing(frame: np.ndarray, config: dict, isHSV: bool = False):
 
         # Apply Gaussian blur
         frameGray = cv.GaussianBlur(
-            frameGray, (int(cfgPostprocess['gaussianKernelSize']), int(cfgPostprocess['gaussianKernelSize'])), 0)
+            frameGray, (int(cfgPostprocess['gaussianKernel']), int(cfgPostprocess['gaussianKernel'])), 0)
 
         # Apply thresholding
         if (cfgThreshold == 'adaptive'):
@@ -81,7 +81,7 @@ def postProcessing(frame: np.ndarray, config: dict, isHSV: bool = False):
 
         # Apply morphological operations
         erodeKernel = cv.getStructuringElement(
-            cv.MORPH_RECT, (int(cfgPostprocess['erosionKernelSize']), int(cfgPostprocess['erosionKernelSize'])))
+            cv.MORPH_RECT, (int(cfgPostprocess['erosionKernel']), int(cfgPostprocess['erosionKernel'])))
         mask = cv.morphologyEx(mask, cv.MORPH_OPEN, erodeKernel)
         mask = cv.morphologyEx(mask, cv.MORPH_CLOSE, erodeKernel)
 
