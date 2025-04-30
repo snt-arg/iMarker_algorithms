@@ -136,6 +136,7 @@ def singleFrameProcessing(frame: np.ndarray, ret: bool, config: dict):
     # Parameters
     cfgProc = config['algorithm']['process']
     cfgColorRange = cfgProc['colorRange']
+    isIR = config['mode']['runner'] == 'sv_ir'
     isUV = config['mode']['runner'] == 'offimguv' or config['mode']['runner'] == 'usbuv'
 
     # Define a null frame
@@ -147,7 +148,7 @@ def singleFrameProcessing(frame: np.ndarray, ret: bool, config: dict):
         mask = None
 
         # Check if grayscale
-        if isUV:
+        if isUV or isIR:
             # Convert the frame to grayscale
             frameGray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
             # Apply the histogram equalization
