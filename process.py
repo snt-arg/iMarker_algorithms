@@ -136,8 +136,8 @@ def singleFrameProcessing(frame: np.ndarray, ret: bool, config: dict):
     # Parameters
     cfgProc = config['algorithm']['process']
     cfgColorRange = cfgProc['colorRange']
-    isIR = config['mode']['runner'] == 'sv_ir'
-    isUV = config['mode']['runner'] == 'offimguv' or config['mode']['runner'] == 'usbuv'
+    isIR = config['mode']['runner'] == 'sv_usbIr'
+    isUV = config['mode']['runner'] == 'sv_offImgUV' or config['mode']['runner'] == 'sv_usbUv'
 
     # Define a null frame
     height, width = frame.shape[:2]

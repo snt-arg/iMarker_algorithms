@@ -30,9 +30,12 @@ def postProcessing(frame: np.ndarray, config: dict, isHSV: bool = False):
         Processed frame
     """
     try:
+        # Particular Variable
+        # [hint] The old dual-vision USB camera setup requires a mask to avoid barriers.
+        isDualVisionUsb = config['mode']['runner'] == 'dv_usb'
+        cfgDualVisionUsb = config['sensor']['usbCam'] if isDualVisionUsb else None
+
         # Processing parameters
-        isUsbCam = config['mode']['runner'] == 'usb'
-        cfgUsbCam = config['sensor']['usbCam'] if isUsbCam else None
         cfgPostprocess = config['algorithm']['postprocess']
         cfgThreshold = cfgPostprocess['threshold']['method']
 
@@ -75,9 +78,9 @@ def postProcessing(frame: np.ndarray, config: dict, isHSV: bool = False):
             mask = cv.bitwise_not(mask)
 
         # Apply ROI
-        if isUsbCam and cfgUsbCam['enableMask']:
+        if isDualVisionUsb and cfgDualVisionUsb['enableMask']:
             mask = applyCircularMask(
-                mask, cfgUsbCam['maskSize'], cfgPostprocess['invertBinary'])
+                mask, cfgDualVisionUsb['maskSize'], cfgPostprocess['invertBinary'])
 
         # Apply morphological operations
         erodeKernel = cv.getStructuringElement(
